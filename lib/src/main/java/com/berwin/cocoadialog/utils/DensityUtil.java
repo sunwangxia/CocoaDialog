@@ -1,4 +1,4 @@
-package com.xia.cocoadialog.lib.utils;
+package com.berwin.cocoadialog.utils;
 
 import android.content.Context;
 

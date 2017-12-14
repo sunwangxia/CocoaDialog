@@ -1,4 +1,4 @@
-package com.xia.cocoadialog.lib;
+package com.berwin.cocoadialog;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -19,7 +19,7 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.xia.cocoadialog.lib.utils.DensityUtil;
+import com.berwin.cocoadialog.utils.DensityUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -94,7 +94,7 @@ public class CocoaDialog extends DialogFragment {
         animStyleRes = bundle.getInt(ARGUMENT_ANIMATION_STYLE, 0);
     }
 
-    /*@Override
+    @Override
     public void onStart() {
         super.onStart();
         Window window = getDialog().getWindow();
@@ -102,7 +102,7 @@ public class CocoaDialog extends DialogFragment {
         WindowManager.LayoutParams l = window.getAttributes();
         l.width = WindowManager.LayoutParams.MATCH_PARENT;
         window.setAttributes(l);
-    }*/
+    }
 
     @SuppressLint("InflateParams")
     @Nullable
@@ -116,18 +116,18 @@ public class CocoaDialog extends DialogFragment {
         mWindow.setAttributes(l);
         View contentView;
         if (preferredStyle == CocoaDialogStyle.alert) {
-            contentView = LayoutInflater.from(getContext()).inflate(R.layout.cocoa_dialog_alert, null, false);
+            contentView = LayoutInflater.from(getContext()).inflate(com.berwin.cocoadialog.R.layout.cocoa_dialog_alert, null, false);
             if (animStyleRes <= 0) {
                 mWindow.setWindowAnimations(android.R.style.Animation_Dialog);
             } else {
                 mWindow.setWindowAnimations(animStyleRes);
             }
-            headerPanel = (LinearLayout) contentView.findViewById(R.id.headPanel);
+            headerPanel = (LinearLayout) contentView.findViewById(com.berwin.cocoadialog.R.id.headPanel);
             if (title == null && message == null && editTextList.isEmpty() && actionList.size() > 2) {
                 headerPanel.setVisibility(View.GONE);
             }
             for (EditText editText : editTextList) {
-                editText.setBackgroundResource(R.drawable.cocoa_dialog_edit_text_background);
+                editText.setBackgroundResource(com.berwin.cocoadialog.R.drawable.cocoa_dialog_edit_text_background);
                 LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
                 params.topMargin = DensityUtil.dip2px(getContext(), 8);
                 editText.setLayoutParams(params);
@@ -139,26 +139,26 @@ public class CocoaDialog extends DialogFragment {
                 headerPanel.addView(editText);
             }
         } else {
-            contentView = LayoutInflater.from(getContext()).inflate(R.layout.cocoa_dialog_action_sheet, null, false);
-            mWindow.setWindowAnimations(R.style.Animation_CocoaDialog_ActionSheet);
+            contentView = LayoutInflater.from(getContext()).inflate(com.berwin.cocoadialog.R.layout.cocoa_dialog_action_sheet, null, false);
+            mWindow.setWindowAnimations(com.berwin.cocoadialog.R.style.Animation_CocoaDialog_ActionSheet);
             mWindow.setGravity(Gravity.BOTTOM);
-            headerPanel = (LinearLayout) contentView.findViewById(R.id.headPanel);
+            headerPanel = (LinearLayout) contentView.findViewById(com.berwin.cocoadialog.R.id.headPanel);
             if (title == null && message == null) {
                 headerPanel.setVisibility(View.GONE);
             }
 
         }
-        TextView titleText = (TextView) contentView.findViewById(R.id.title);
-        TextView messageText = (TextView) contentView.findViewById(R.id.message);
+        TextView titleText = (TextView) contentView.findViewById(com.berwin.cocoadialog.R.id.title);
+        TextView messageText = (TextView) contentView.findViewById(com.berwin.cocoadialog.R.id.message);
         if (title != null) {
             titleText.setText(title);
         } else {
             titleText.setVisibility(View.GONE);
         }
         messageText.setText(message);
-        contentPanel = (LinearLayout) contentView.findViewById(R.id.contentPanel);
-        panelBorder = (TextView) contentView.findViewById(R.id.panelBorder);
-        buttonPanel = (LinearLayout) contentView.findViewById(R.id.buttonPanel);
+        contentPanel = (LinearLayout) contentView.findViewById(com.berwin.cocoadialog.R.id.contentPanel);
+        panelBorder = (TextView) contentView.findViewById(com.berwin.cocoadialog.R.id.panelBorder);
+        buttonPanel = (LinearLayout) contentView.findViewById(com.berwin.cocoadialog.R.id.buttonPanel);
         resolveActions();
         return contentView;
     }
@@ -288,10 +288,10 @@ public class CocoaDialog extends DialogFragment {
                         boolean needBorder = true;
                         if (i == 0 && title == null && message == null && editTextList.isEmpty()) {
                             panelBorder.setVisibility(View.GONE);
-                            buttonPanel.setBackgroundResource(R.drawable.cocoa_dialog_corner_radius);
-                            button.setBackgroundResource(R.drawable.cocoa_dialog_top_radius);
+                            buttonPanel.setBackgroundResource(com.berwin.cocoadialog.R.drawable.cocoa_dialog_corner_radius);
+                            button.setBackgroundResource(com.berwin.cocoadialog.R.drawable.cocoa_dialog_top_radius);
                         } else if (i + 1 >= actionList.size()) {
-                            button.setBackgroundResource(R.drawable.cocoa_dialog_bottom_radius);
+                            button.setBackgroundResource(com.berwin.cocoadialog.R.drawable.cocoa_dialog_bottom_radius);
                             needBorder = false;
                         } else {
                             button.setBackgroundColor(Color.WHITE);
@@ -319,12 +319,12 @@ public class CocoaDialog extends DialogFragment {
                             LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(DensityUtil.dip2px(getContext(), 1), ViewGroup.LayoutParams.MATCH_PARENT);
                             border.setLayoutParams(params);
                             buttonPanel.addView(border);
-                            button.setBackgroundResource(R.drawable.cocoa_dialog_bottom_right_radius);
+                            button.setBackgroundResource(com.berwin.cocoadialog.R.drawable.cocoa_dialog_bottom_right_radius);
                         } else {
                             if (i + 1 >= actionList.size()) {
-                                button.setBackgroundResource(R.drawable.cocoa_dialog_bottom_radius);
+                                button.setBackgroundResource(com.berwin.cocoadialog.R.drawable.cocoa_dialog_bottom_radius);
                             } else {
-                                button.setBackgroundResource(R.drawable.cocoa_dialog_bottom_left_radius);
+                                button.setBackgroundResource(com.berwin.cocoadialog.R.drawable.cocoa_dialog_bottom_left_radius);
                             }
                         }
                         buttonPanel.addView(button);
@@ -335,9 +335,9 @@ public class CocoaDialog extends DialogFragment {
         } else {
             panelBorder.setVisibility(View.GONE);
             if (actionList.isEmpty() || (actionList.size() == 1 && actionList.get(0).getStyle() == CocoaDialogActionStyle.cancel)) {
-                headerPanel.setBackgroundResource(R.drawable.cocoa_dialog_corner_radius);
+                headerPanel.setBackgroundResource(com.berwin.cocoadialog.R.drawable.cocoa_dialog_corner_radius);
             } else {
-                headerPanel.setBackgroundResource(R.drawable.cocoa_dialog_top_radius);
+                headerPanel.setBackgroundResource(com.berwin.cocoadialog.R.drawable.cocoa_dialog_top_radius);
             }
             for (int i = 0; i < actionList.size(); i++) {
                 CocoaDialogAction action = actionList.get(i);
@@ -345,7 +345,7 @@ public class CocoaDialog extends DialogFragment {
                 Button button = buildActionButton(action, buttonParams);
                 if (action.getStyle() == CocoaDialogActionStyle.cancel) {
                     buttonParams.topMargin = DensityUtil.dip2px(getContext(), 10);
-                    button.setBackgroundResource(R.drawable.cocoa_dialog_corner_radius);
+                    button.setBackgroundResource(com.berwin.cocoadialog.R.drawable.cocoa_dialog_corner_radius);
                     contentPanel.addView(button);
                     continue;
                 }
@@ -355,15 +355,15 @@ public class CocoaDialog extends DialogFragment {
                 LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, DensityUtil.dip2px(getContext(), 1));
                 border.setLayoutParams(params);
                 if (((i == 0 && action.getStyle() != CocoaDialogActionStyle.cancel) || (i == 1 && actionList.get(0).getStyle() == CocoaDialogActionStyle.cancel)) && title == null && message == null) {
-                    buttonPanel.setBackgroundResource(R.drawable.cocoa_dialog_corner_radius);
+                    buttonPanel.setBackgroundResource(com.berwin.cocoadialog.R.drawable.cocoa_dialog_corner_radius);
                     if (i + 1 < actionList.size()) {
-                        button.setBackgroundResource(R.drawable.cocoa_dialog_top_radius);
+                        button.setBackgroundResource(com.berwin.cocoadialog.R.drawable.cocoa_dialog_top_radius);
                     } else {
-                        button.setBackgroundResource(R.drawable.cocoa_dialog_corner_radius);
+                        button.setBackgroundResource(com.berwin.cocoadialog.R.drawable.cocoa_dialog_corner_radius);
                     }
                 } else if (i + 1 >= actionList.size()) {
                     buttonPanel.addView(border);
-                    button.setBackgroundResource(R.drawable.cocoa_dialog_bottom_radius);
+                    button.setBackgroundResource(com.berwin.cocoadialog.R.drawable.cocoa_dialog_bottom_radius);
                 } else {
                     buttonPanel.addView(border);
                     button.setBackgroundColor(Color.WHITE);

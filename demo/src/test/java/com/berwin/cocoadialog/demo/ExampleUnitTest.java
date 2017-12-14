@@ -1,4 +1,4 @@
-package com.xia.cocoadialog.demo;
+package com.berwin.cocoadialog.demo;
 
 import org.junit.Test;
 

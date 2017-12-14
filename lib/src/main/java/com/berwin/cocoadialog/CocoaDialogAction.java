@@ -1,4 +1,4 @@
-package com.xia.cocoadialog.lib;
+package com.berwin.cocoadialog;
 
 
 public class CocoaDialogAction {

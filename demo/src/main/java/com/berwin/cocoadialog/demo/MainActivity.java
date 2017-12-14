@@ -1,4 +1,4 @@
-package com.xia.cocoadialog.demo;
+package com.berwin.cocoadialog.demo;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -8,10 +8,10 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.xia.cocoadialog.lib.CocoaDialog;
-import com.xia.cocoadialog.lib.CocoaDialogStyle;
-import com.xia.cocoadialog.lib.CocoaDialogAction;
-import com.xia.cocoadialog.lib.CocoaDialogActionStyle;
+import com.berwin.cocoadialog.CocoaDialog;
+import com.berwin.cocoadialog.CocoaDialogStyle;
+import com.berwin.cocoadialog.CocoaDialogAction;
+import com.berwin.cocoadialog.CocoaDialogActionStyle;
 
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
@@ -33,14 +33,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         switch (v.getId()) {
             case R.id.btn_alert_simple:
-                CocoaDialog dialog = CocoaDialog.build("Short Title is Best", "A message should be short", CocoaDialogStyle.alert);
-                dialog.addAction(new CocoaDialogAction("Ok", CocoaDialogActionStyle.cancel, null));
+                CocoaDialog dialog = CocoaDialog.build("This is the title", "This is a message", CocoaDialogStyle.alert);
+                dialog.addAction(new CocoaDialogAction("OK", CocoaDialogActionStyle.cancel, null));
                 dialog.show(getSupportFragmentManager(), "alert");
+
+
+                CocoaDialog.build("This is the title", "This is a message", CocoaDialogStyle.alert)
+                        .addAction(new CocoaDialogAction("OK", CocoaDialogActionStyle.cancel, null))
+                        .show(getSupportFragmentManager(), "alert");
+
                 break;
             case R.id.btn_alert_ok_cancel:
-                CocoaDialog dialog1 = CocoaDialog.build("Short Title is Best", "A message should be short", CocoaDialogStyle.alert);
+                CocoaDialog dialog1 = CocoaDialog.build("This is the title", "This is a message", CocoaDialogStyle.alert);
                 dialog1.addAction(new CocoaDialogAction("Cancel", CocoaDialogActionStyle.cancel, null));
-                dialog1.addAction(new CocoaDialogAction("Ok", CocoaDialogActionStyle.normal, new CocoaDialogAction.OnClickListener() {
+                dialog1.addAction(new CocoaDialogAction("OK", CocoaDialogActionStyle.normal, new CocoaDialogAction.OnClickListener() {
                     @Override
                     public void onClick(CocoaDialog dialog) {
                         Toast.makeText(getBaseContext(), "The ok button is clicked.", Toast.LENGTH_SHORT).show();
@@ -56,9 +62,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 dialog2.show(getSupportFragmentManager(), "alert");
                 break;
             case R.id.btn_alert_with_input:
-                CocoaDialog dialog3 = CocoaDialog.build("Short Title is Best", "A message should be short", CocoaDialogStyle.alert);
+                CocoaDialog dialog3 = CocoaDialog.build("This is the title", "This is a message", CocoaDialogStyle.alert);
                 dialog3.addAction(new CocoaDialogAction("Cancel", CocoaDialogActionStyle.cancel, null));
-                dialog3.addAction(new CocoaDialogAction("Ok", CocoaDialogActionStyle.normal, new CocoaDialogAction.OnClickListener() {
+                dialog3.addAction(new CocoaDialogAction("OK", CocoaDialogActionStyle.normal, new CocoaDialogAction.OnClickListener() {
                     @Override
                     public void onClick(CocoaDialog dialog) {
                         if (dialog.editTextList.size() > 0 && !TextUtils.isEmpty(dialog.editTextList.get(0).getText())) {
@@ -83,9 +89,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                 break;
             case R.id.btn_action_sheet_ok_cancel:
-                CocoaDialog dialog4 = CocoaDialog.build("Short Title is Best", "A message should be short", CocoaDialogStyle.actionSheet);
+                CocoaDialog dialog4 = CocoaDialog.build("This is the title", "This is a message", CocoaDialogStyle.actionSheet);
                 dialog4.addAction(new CocoaDialogAction("Cancel", CocoaDialogActionStyle.cancel, null));
-                dialog4.addAction(new CocoaDialogAction("Ok", CocoaDialogActionStyle.normal, new CocoaDialogAction.OnClickListener() {
+                dialog4.addAction(new CocoaDialogAction("OK", CocoaDialogActionStyle.normal, new CocoaDialogAction.OnClickListener() {
                     @Override
                     public void onClick(CocoaDialog dialog) {
                         Toast.makeText(getBaseContext(), "The ok button is clicked.", Toast.LENGTH_SHORT).show();
@@ -94,7 +100,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 dialog4.show(getSupportFragmentManager(), "actionSheet");
                 break;
             case R.id.btn_action_sheet_other:
-                CocoaDialog dialog5 = CocoaDialog.build("Short Title is Best", "A message should be short", CocoaDialogStyle.actionSheet);
+                CocoaDialog dialog5 = CocoaDialog.build("This is the title", "This is a message", CocoaDialogStyle.actionSheet);
                 dialog5.addAction(new CocoaDialogAction("Destructive Choice", CocoaDialogActionStyle.destructive, null));
                 dialog5.addAction(new CocoaDialogAction("Safe Choice", CocoaDialogActionStyle.normal, null));
                 dialog5.show(getSupportFragmentManager(), "actionSheet");
