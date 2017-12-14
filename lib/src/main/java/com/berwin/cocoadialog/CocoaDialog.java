@@ -94,7 +94,7 @@ public class CocoaDialog extends DialogFragment {
         animStyleRes = bundle.getInt(ARGUMENT_ANIMATION_STYLE, 0);
     }
 
-    /*@Override
+    @Override
     public void onStart() {
         super.onStart();
         Window window = getDialog().getWindow();
@@ -102,7 +102,7 @@ public class CocoaDialog extends DialogFragment {
         WindowManager.LayoutParams l = window.getAttributes();
         l.width = WindowManager.LayoutParams.MATCH_PARENT;
         window.setAttributes(l);
-    }*/
+    }
 
     @SuppressLint("InflateParams")
     @Nullable
