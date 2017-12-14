@@ -56,7 +56,7 @@ dependencies {
 
 **带输入的对话框**
 --------
-如果使用的是alert样式的**CocoaDialog**，则可通过调用addEditText(Context context, EditTextConfigurationHandler configurationHandler)方法来为对话框添加文本输入框，用户可在EditTextConfigurationHandler的回调方法**onEditTextAdded(EditText editText)**中对添加到对话框中的输入框进行配置，如果修改输入类型，提示文本等。***注意，addEditText方法仅在alert样式下生效。***  
+如果使用的是alert样式的**CocoaDialog**，则可通过调用addEditText(Context context, EditTextConfigurationHandler configurationHandler)方法来为对话框添加文本输入框，用户可在EditTextConfigurationHandler的回调方法onEditTextAdded(EditText editText)中对添加到对话框中的输入框进行配置，如果修改输入类型，提示文本等。***注意，addEditText方法仅在alert样式下生效。***  
 文本框的内容可通过遍历 **CocoaDialog** 实例中的数组 ***editTextList*** 获取。
 
 ```
