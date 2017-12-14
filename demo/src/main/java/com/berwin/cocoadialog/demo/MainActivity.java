@@ -36,12 +36,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 CocoaDialog dialog = CocoaDialog.build("This is the title", "This is a message", CocoaDialogStyle.alert);
                 dialog.addAction(new CocoaDialogAction("OK", CocoaDialogActionStyle.cancel, null));
                 dialog.show(getSupportFragmentManager(), "alert");
-
-
-                CocoaDialog.build("This is the title", "This is a message", CocoaDialogStyle.alert)
-                        .addAction(new CocoaDialogAction("OK", CocoaDialogActionStyle.cancel, null))
-                        .show(getSupportFragmentManager(), "alert");
-
                 break;
             case R.id.btn_alert_ok_cancel:
                 CocoaDialog dialog1 = CocoaDialog.build("This is the title", "This is a message", CocoaDialogStyle.alert);
