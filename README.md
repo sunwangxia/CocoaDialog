@@ -1,4 +1,5 @@
-#CocoaDialog
+CocoaDialog
+========
 
 **CocoaDialog** 是一个仿iOS端UIAlertController实现的Android端的对话框控件，提供了普通Alert模式的对话框、带输入的Alert对话框，以及底部弹出的菜单样式可选。只需简单改句代码，便能实现类似iOS端对话框的效果。  
 
