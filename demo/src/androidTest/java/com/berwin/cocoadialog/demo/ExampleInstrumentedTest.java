@@ -21,6 +21,6 @@ public class ExampleInstrumentedTest {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
 
-        assertEquals("com.xia.cocoadialog.demo", appContext.getPackageName());
+        assertEquals("com.berwin.cocoadialog.demo", appContext.getPackageName());
     }
 }
