@@ -31,7 +31,7 @@ dependencies {
 **CocoDialog**的使用方法非常简单，通过调用CocoaDialog.build(CharSequence title, CharSequence message, CocoaDialogStyle preferredStyle)方法构建出对话框实例，然后调用addAction设置对话框按钮，之后再调用show方法即可。
 
 ```
-	CocoaDialog dialog = CocoaDialog.build("This is the title", "This is a message", CocoaDialogStyle.alert);  
+    CocoaDialog dialog = CocoaDialog.build("This is the title", "This is a message", CocoaDialogStyle.alert);  
     dialog.addAction(new CocoaDialogAction("Cancel", CocoaDialogActionStyle.cancel, null));
     dialog.addAction(new CocoaDialogAction("OK", CocoaDialogActionStyle.normal, new CocoaDialogAction.OnClickListener() {
         @Override
