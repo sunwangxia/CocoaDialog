@@ -273,62 +273,61 @@ public class CocoaDialog extends DialogFragment {
         if (preferredStyle == CocoaDialogStyle.alert) {
             if (actionList.isEmpty()) {
                 panelBorder.setVisibility(View.GONE);
+            } else if (actionList.size() > 2) {// 拥有3个以上Action时，每个Action Button占用整行空间
+                panelBorder.setVisibility(View.VISIBLE);
+                buttonPanel.setOrientation(LinearLayout.VERTICAL);
+                if (actionList.get(0).getStyle() == CocoaDialogActionStyle.cancel) { // 调整取消按钮放到最下方
+                    CocoaDialogAction cancelAction = actionList.remove(0);
+                    actionList.add(cancelAction);
+                }
+                for (int i = 0; i < actionList.size(); i++) {
+                    final CocoaDialogAction action = actionList.get(i);
+                    LinearLayout.LayoutParams buttonParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, DensityUtil.dip2px(getContext(), 50));
+                    Button button = buildActionButton(action, buttonParams);
+                    boolean needBorder = true;
+                    if (i == 0 && title == null && message == null && editTextList.isEmpty()) {
+                        panelBorder.setVisibility(View.GONE);
+                        buttonPanel.setBackgroundResource(com.berwin.cocoadialog.R.drawable.cocoa_dialog_corner_radius);
+                        button.setBackgroundResource(com.berwin.cocoadialog.R.drawable.cocoa_dialog_top_radius);
+                    } else if (i == (actionList.size() - 1)) {
+                        button.setBackgroundResource(com.berwin.cocoadialog.R.drawable.cocoa_dialog_bottom_radius);
+                        needBorder = false;
+                    } else {
+                        button.setBackgroundColor(Color.WHITE);
+                    }
+                    buttonPanel.addView(button);
+                    if (needBorder) {
+                        TextView border = new TextView(getContext());
+                        border.setBackgroundColor(0xFFC8C7CC);
+                        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, DensityUtil.dip2px(getContext(), 1));
+                        border.setLayoutParams(params);
+                        buttonPanel.addView(border);
+                    }
+                }
             } else {
                 panelBorder.setVisibility(View.VISIBLE);
-                if (actionList.size() > 2) { // 拥有3个以上Action时，每个Action Button占用整行空间
-                    buttonPanel.setOrientation(LinearLayout.VERTICAL);
-                    if (actionList.get(0).getStyle() == CocoaDialogActionStyle.cancel) { // 调整取消按钮放到最下方
-                        CocoaDialogAction cancelAction = actionList.remove(0);
-                        actionList.add(cancelAction);
-                    }
-                    for (int i = 0; i < actionList.size(); i++) {
-                        final CocoaDialogAction action = actionList.get(i);
-                        LinearLayout.LayoutParams buttonParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, DensityUtil.dip2px(getContext(), 50));
-                        Button button = buildActionButton(action, buttonParams);
-                        boolean needBorder = true;
-                        if (i == 0 && title == null && message == null && editTextList.isEmpty()) {
-                            panelBorder.setVisibility(View.GONE);
-                            buttonPanel.setBackgroundResource(com.berwin.cocoadialog.R.drawable.cocoa_dialog_corner_radius);
-                            button.setBackgroundResource(com.berwin.cocoadialog.R.drawable.cocoa_dialog_top_radius);
-                        } else if (i + 1 >= actionList.size()) {
+                buttonPanel.setOrientation(LinearLayout.HORIZONTAL);
+                for (int i = 0; i < actionList.size(); i++) {
+                    final CocoaDialogAction action = actionList.get(i);
+                    LinearLayout.LayoutParams buttonParams = new LinearLayout.LayoutParams(0, DensityUtil.dip2px(getContext(), 45));
+                    buttonParams.weight = 1;
+                    Button button = buildActionButton(action, buttonParams);
+                    if (buttonPanel.getChildCount() > 0) {
+                        // 添加按钮分隔线
+                        TextView border = new TextView(getContext());
+                        border.setBackgroundColor(0xFFC8C7CC);
+                        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(DensityUtil.dip2px(getContext(), 1), ViewGroup.LayoutParams.MATCH_PARENT);
+                        border.setLayoutParams(params);
+                        buttonPanel.addView(border);
+                        button.setBackgroundResource(com.berwin.cocoadialog.R.drawable.cocoa_dialog_bottom_right_radius);
+                    } else {
+                        if (i + 1 >= actionList.size()) {
                             button.setBackgroundResource(com.berwin.cocoadialog.R.drawable.cocoa_dialog_bottom_radius);
-                            needBorder = false;
                         } else {
-                            button.setBackgroundColor(Color.WHITE);
-                        }
-                        buttonPanel.addView(button);
-                        if (needBorder) {
-                            TextView border = new TextView(getContext());
-                            border.setBackgroundColor(0xFFC8C7CC);
-                            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, DensityUtil.dip2px(getContext(), 1));
-                            border.setLayoutParams(params);
-                            buttonPanel.addView(border);
+                            button.setBackgroundResource(com.berwin.cocoadialog.R.drawable.cocoa_dialog_bottom_left_radius);
                         }
                     }
-                } else {
-                    buttonPanel.setOrientation(LinearLayout.HORIZONTAL);
-                    for (int i = 0; i < actionList.size(); i++) {
-                        final CocoaDialogAction action = actionList.get(i);
-                        LinearLayout.LayoutParams buttonParams = new LinearLayout.LayoutParams(0, DensityUtil.dip2px(getContext(), 45));
-                        buttonParams.weight = 1;
-                        Button button = buildActionButton(action, buttonParams);
-                        if (buttonPanel.getChildCount() > 0) {
-                            // 添加按钮分隔线
-                            TextView border = new TextView(getContext());
-                            border.setBackgroundColor(0xFFC8C7CC);
-                            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(DensityUtil.dip2px(getContext(), 1), ViewGroup.LayoutParams.MATCH_PARENT);
-                            border.setLayoutParams(params);
-                            buttonPanel.addView(border);
-                            button.setBackgroundResource(com.berwin.cocoadialog.R.drawable.cocoa_dialog_bottom_right_radius);
-                        } else {
-                            if (i + 1 >= actionList.size()) {
-                                button.setBackgroundResource(com.berwin.cocoadialog.R.drawable.cocoa_dialog_bottom_radius);
-                            } else {
-                                button.setBackgroundResource(com.berwin.cocoadialog.R.drawable.cocoa_dialog_bottom_left_radius);
-                            }
-                        }
-                        buttonPanel.addView(button);
-                    }
+                    buttonPanel.addView(button);
                 }
             }
 

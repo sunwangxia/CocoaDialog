@@ -12,14 +12,14 @@ CocoaDialog
 使用 Gradle:
 ```
 dependencies {
-   compile 'com.berwin.cocoadialog:lib:1.0.0'
+   compile 'com.berwin.cocoadialog:cocoadialog:1.0.0'
 }
 ```
 或者 Maven：
 ```
 <dependency>
   <groupId>com.berwin.cocoadialog</groupId>
-  <artifactId>lib</artifactId>
+  <artifactId>cocoadialog</artifactId>
   <version>1.0.0</version>
   <type>pom</type>
 </dependency>
@@ -32,14 +32,14 @@ dependencies {
 
 ```
 	CocoaDialog dialog = CocoaDialog.build("This is the title", "This is a message", CocoaDialogStyle.alert);  
-                dialog.addAction(new CocoaDialogAction("Cancel", CocoaDialogActionStyle.cancel, null));
-                dialog.addAction(new CocoaDialogAction("OK", CocoaDialogActionStyle.normal, new CocoaDialogAction.OnClickListener() {
-                    @Override
-                    public void onClick(CocoaDialog dialog) {
-                        Toast.makeText(getBaseContext(), "The ok button is clicked.", Toast.LENGTH_SHORT).show();
-                    }
-                }));
-                dialog.show(getSupportFragmentManager(), "alert");
+    dialog.addAction(new CocoaDialogAction("Cancel", CocoaDialogActionStyle.cancel, null));
+    dialog.addAction(new CocoaDialogAction("OK", CocoaDialogActionStyle.normal, new CocoaDialogAction.OnClickListener() {
+        @Override
+        public void onClick(CocoaDialog dialog) {
+            Toast.makeText(getBaseContext(), "The ok button is clicked.", Toast.LENGTH_SHORT).show();
+        }
+    }));
+    dialog.show(getSupportFragmentManager(), "alert");
 ```
 当然，你也可以使用如下的链式操作:
 
@@ -61,30 +61,30 @@ dependencies {
 文本框的内容可通过遍历 **CocoaDialog** 实例中的数组 ***editTextList*** 获取。
 
 ```
-CocoaDialog dialog = CocoaDialog.build("This is the title", "This is a message", CocoaDialogStyle.alert);
-                dialog.addAction(new CocoaDialogAction("Cancel", CocoaDialogActionStyle.cancel, null));
-                dialog.addAction(new CocoaDialogAction("OK", CocoaDialogActionStyle.normal, new CocoaDialogAction.OnClickListener() {
-                    @Override
-                    public void onClick(CocoaDialog dialog) {
-                        if (dialog.editTextList.size() > 0 && !TextUtils.isEmpty(dialog.editTextList.get(0).getText())) {
-                            Toast.makeText(getBaseContext(), dialog.editTextList.get(0).getText(), Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                }));
-                dialog.addEditText(this, new CocoaDialog.EditTextConfigurationHandler() {
-                    @Override
-                    public void onEditTextAdded(EditText editText) {
-                        editText.setHint("Enter the username.");
-                    }
-                });
-                dialog.addEditText(this, new CocoaDialog.EditTextConfigurationHandler() {
-                    @Override
-                    public void onEditTextAdded(EditText editText) {
-                        editText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
-                        editText.setHint("Enter the password.");
-                    }
-                });
-                dialog.show(getSupportFragmentManager(), "alert");
+    CocoaDialog dialog = CocoaDialog.build("This is the title", "This is a message", CocoaDialogStyle.alert);
+    dialog.addAction(new CocoaDialogAction("Cancel", CocoaDialogActionStyle.cancel, null));
+    dialog.addAction(new CocoaDialogAction("OK", CocoaDialogActionStyle.normal, new CocoaDialogAction.OnClickListener() {
+        @Override
+        public void onClick(CocoaDialog dialog) {
+            if (dialog.editTextList.size() > 0 && !TextUtils.isEmpty(dialog.editTextList.get(0).getText())) {
+                Toast.makeText(getBaseContext(), dialog.editTextList.get(0).getText(), Toast.LENGTH_SHORT).show();
+            }
+        }
+    }));
+    dialog.addEditText(this, new CocoaDialog.EditTextConfigurationHandler() {
+        @Override
+        public void onEditTextAdded(EditText editText) {
+            editText.setHint("Enter the username.");
+        }
+    });
+    dialog.addEditText(this, new CocoaDialog.EditTextConfigurationHandler() {
+        @Override
+        public void onEditTextAdded(EditText editText) {
+            editText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+            editText.setHint("Enter the password.");
+        }
+    });
+    dialog.show(getSupportFragmentManager(), "alert");
 ```
 
 
@@ -93,15 +93,15 @@ CocoaDialog dialog = CocoaDialog.build("This is the title", "This is a message",
 CocoaDialog提供两种样式可供选择，一种为普通Alert对话框，一种为底部弹出菜单，如需使用底部弹出菜单样式，只需在构建对话框实例时选用actionSheet样式：
 
 ```
-CocoaDialog dialog = CocoaDialog.build("This is the title", "This is a message", CocoaDialogStyle.actionSheet);
-                dialog.addAction(new CocoaDialogAction("Cancel", CocoaDialogActionStyle.cancel, null));
-                dialog.addAction(new CocoaDialogAction("OK", CocoaDialogActionStyle.normal, new CocoaDialogAction.OnClickListener() {
-                    @Override
-                    public void onClick(CocoaDialog dialog) {
-                        Toast.makeText(getBaseContext(), "The ok button is clicked.", Toast.LENGTH_SHORT).show();
-                    }
-                }));
-                dialog.show(getSupportFragmentManager(), "actionSheet");
+    CocoaDialog dialog = CocoaDialog.build("This is the title", "This is a message", CocoaDialogStyle.actionSheet);
+    dialog.addAction(new CocoaDialogAction("Cancel", CocoaDialogActionStyle.cancel, null));
+    dialog.addAction(new CocoaDialogAction("OK", CocoaDialogActionStyle.normal, new CocoaDialogAction.OnClickListener() {
+        @Override
+        public void onClick(CocoaDialog dialog) {
+            Toast.makeText(getBaseContext(), "The ok button is clicked.", Toast.LENGTH_SHORT).show();
+        }
+    }));
+    dialog.show(getSupportFragmentManager(), "actionSheet");
 ```
 
 
