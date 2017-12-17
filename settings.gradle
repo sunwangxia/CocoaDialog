@@ -1,1 +1,1 @@
-include ':lib', ':demo'
+include ':cocoadialog', ':demo'
