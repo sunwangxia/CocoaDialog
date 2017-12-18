@@ -12,7 +12,7 @@ CocoaDialog
 使用 Gradle:
 ```
 dependencies {
-   compile 'com.berwin.cocoadialog:cocoadialog:1.0.0'
+   compile 'com.berwin.cocoadialog:cocoadialog:1.0.1'
 }
 ```
 或者 Maven：
@@ -20,7 +20,7 @@ dependencies {
 <dependency>
   <groupId>com.berwin.cocoadialog</groupId>
   <artifactId>cocoadialog</artifactId>
-  <version>1.0.0</version>
+  <version>1.0.1</version>
   <type>pom</type>
 </dependency>
 ```
