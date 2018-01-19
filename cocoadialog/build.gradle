@@ -11,7 +11,7 @@ android {
         minSdkVersion 14
         targetSdkVersion 26
         versionCode 1
-        versionName "1.0.0"
+        versionName "1.1.0"
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
@@ -25,19 +25,20 @@ android {
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile fileTree(include: ['*.jar'], dir: 'libs')
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
     compile 'com.android.support:appcompat-v7:26.1.0'
     testCompile 'junit:junit:4.12'
+    implementation 'com.android.support:support-annotations:27.0.2'
 }
 
 def siteUrl = 'https://github.com/swx007/CocoaDialog'      // 项目的主页   这个是说明，可随便填
 def gitUrl = 'https://github.com/swx007/CocoaDialog.git'      // Git仓库的url  这个是说明，可随便填
 group = "com.berwin.cocoadialog"    // 这里是groupId ,必须填写  一般填你唯一的包名，对应com.squareup.okhttp3:okhttp:3.4.1中的com.squareup.okhttp3部分
 // 这个version是library的版本，更新后也需要更改这个值
-version = "1.0.0"
+version = "1.1.0"
 
 install {
     repositories.mavenInstaller {
