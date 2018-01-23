@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.util.DisplayMetrics;
@@ -18,7 +19,9 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
 import com.berwin.cocoadialog.utils.DensityUtil;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -44,8 +47,10 @@ public class CocoaDialogFragment extends DialogFragment implements CocoaDialogIn
 
     public CocoaDialogFragment() {
         super();
-        Bundle bundle = new Bundle();
-        setArguments(bundle);
+        if (getArguments() == null) {
+            Bundle bundle = new Bundle();
+            setArguments(bundle);
+        }
     }
 
     /**
@@ -54,7 +59,7 @@ public class CocoaDialogFragment extends DialogFragment implements CocoaDialogIn
      * @param preferredStyle The preferred syle of the cocoa dialog.
      * @return CocoaDialog instance.
      */
-    public static CocoaDialogFragment create(CocoaDialogStyle preferredStyle) {
+    public static CocoaDialogFragment create(@NonNull CocoaDialogStyle preferredStyle) {
         return create(null, null, preferredStyle);
     }
 
@@ -66,7 +71,7 @@ public class CocoaDialogFragment extends DialogFragment implements CocoaDialogIn
      * @param preferredStyle The preferred syle of the cocoa dialog.
      * @return CocoaDialog instance.
      */
-    public static CocoaDialogFragment create(CharSequence title, CharSequence message, CocoaDialogStyle preferredStyle) {
+    public static CocoaDialogFragment create(CharSequence title, CharSequence message, @NonNull CocoaDialogStyle preferredStyle) {
         CocoaDialogFragment dialog = new CocoaDialogFragment();
         Bundle bundle = dialog.getArguments();
         bundle.putCharSequence(ARGUMENT_TITLE, title);
@@ -85,6 +90,9 @@ public class CocoaDialogFragment extends DialogFragment implements CocoaDialogIn
         mMessage = bundle.getCharSequence(ARGUMENT_MESSAGE);
         mPreferredStyle = (CocoaDialogStyle) bundle.getSerializable(ARGUMENT_STYLE);
         mAnimStyleRes = bundle.getInt(ARGUMENT_ANIMATION_STYLE, 0);
+        if (mPreferredStyle == null) {
+            mPreferredStyle = CocoaDialogStyle.alert;
+        }
     }
 
     @Override
@@ -96,7 +104,7 @@ public class CocoaDialogFragment extends DialogFragment implements CocoaDialogIn
         if (mPreferredStyle == CocoaDialogStyle.alert) {
             DisplayMetrics dm = getContext().getResources().getDisplayMetrics();
             l.width = Math.min(dm.widthPixels, dm.heightPixels);
-        }else {
+        } else {
             l.width = WindowManager.LayoutParams.MATCH_PARENT;
         }
         l.height = WindowManager.LayoutParams.WRAP_CONTENT;
@@ -167,6 +175,7 @@ public class CocoaDialogFragment extends DialogFragment implements CocoaDialogIn
     /**
      * Set the animation style(include enter animation and exit animation) for the cocoa dialog,
      * only effective on a cocoa dialog with a style of CocoaDialogStyle.Alert.
+     *
      * @param animStyleResId Resource ID of the animation.
      * @return CocoaDialog instance.
      */
@@ -178,6 +187,7 @@ public class CocoaDialogFragment extends DialogFragment implements CocoaDialogIn
 
     /**
      * Set title for the cocoa dialog to show.
+     *
      * @param title The title for the cocoa dialog to show.
      * @return CocoaDialog instance.
      */
@@ -189,6 +199,7 @@ public class CocoaDialogFragment extends DialogFragment implements CocoaDialogIn
 
     /**
      * Set message for the cocoa dialog to show.
+     *
      * @param message The message for the cocoa dialog to show.
      * @return CocoaDialog instance.
      */
@@ -200,10 +211,11 @@ public class CocoaDialogFragment extends DialogFragment implements CocoaDialogIn
 
     /**
      * Add action to cocoa dialog.
+     *
      * @param action CocoaDialogAction, appears as a button of the cocoa dialog.
      * @return CocoaDialog instance.
      */
-    public CocoaDialogFragment addAction(CocoaDialogAction action) {
+    public CocoaDialogFragment addAction(@NonNull CocoaDialogAction action) {
         if (action.getStyle() == CocoaDialogActionStyle.cancel) {
             if (!mActionList.isEmpty() && mActionList.get(0).getStyle() == CocoaDialogActionStyle.cancel) {
                 throw new IllegalArgumentException("Cocoa dialog can only have one action with a style of CocoaDialogActionStyle.Cancel");
@@ -219,10 +231,11 @@ public class CocoaDialogFragment extends DialogFragment implements CocoaDialogIn
 
     /**
      * Add an EditText to the cocoa dialog, only effective on a cocoa dialog with a style of CocoaDialogStyle.Alert.
+     *
      * @param configurationHandler The handler to configure the edit text, such as text color, hint and default text.
      * @return CocoaDialog instance.
      */
-    public CocoaDialogFragment addEditText(Context context, EditTextConfigurationHandler configurationHandler) {
+    public CocoaDialogFragment addEditText(@NonNull Context context, EditTextConfigurationHandler configurationHandler) {
         CocoaDialogStyle style = (CocoaDialogStyle) getArguments().getSerializable(ARGUMENT_STYLE);
         if (style != CocoaDialogStyle.alert) {
             throw new IllegalArgumentException("EditText can only be added to a cocoa dialog of style CocoaDialogStyle.Alert");
@@ -287,7 +300,7 @@ public class CocoaDialogFragment extends DialogFragment implements CocoaDialogIn
                         mButtonPanel.setBackgroundResource(com.berwin.cocoadialog.R.drawable.cocoa_dialog_corner_radius);
                         if (mActionList.size() > 1) {
                             button.setBackgroundResource(com.berwin.cocoadialog.R.drawable.cocoa_dialog_top_radius);
-                        }else {
+                        } else {
                             needBorder = false;
                             button.setBackgroundResource(com.berwin.cocoadialog.R.drawable.cocoa_dialog_corner_radius);
                         }

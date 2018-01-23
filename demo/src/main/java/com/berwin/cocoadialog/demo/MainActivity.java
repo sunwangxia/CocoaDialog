@@ -12,7 +12,6 @@ import android.widget.Toast;
 import com.berwin.cocoadialog.CocoaDialog;
 import com.berwin.cocoadialog.CocoaDialogAction;
 import com.berwin.cocoadialog.CocoaDialogActionStyle;
-import com.berwin.cocoadialog.CocoaDialogFragment;
 import com.berwin.cocoadialog.CocoaDialogInterface;
 import com.berwin.cocoadialog.CocoaDialogStyle;
 import com.berwin.cocoadialog.EditTextConfigurationHandler;
@@ -171,7 +170,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             case R.id.btn_action_sheet_ok_cancel:
                 //不需要title和message可调用单一参数的build方法，之后如果需要可通过setter方法进行设置
-                /*new CocoaDialog.Builder(this, CocoaDialogStyle.actionSheet)
+                new CocoaDialog.Builder(this, CocoaDialogStyle.actionSheet)
                         .addAction(new CocoaDialogAction("Cancel", CocoaDialogActionStyle.cancel, new CocoaDialogAction.OnClickListener() {
                             @Override
                             public void onClick(CocoaDialogInterface dialog) {
@@ -190,8 +189,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                 Toast.makeText(getBaseContext(), "Select from Album clicked.", Toast.LENGTH_SHORT).show();
                             }
                         }))
-                        .create().show();*/
-                CocoaDialogFragment.create(CocoaDialogStyle.actionSheet)
+                        .create().show();
+                /*CocoaDialogFragment.create(CocoaDialogStyle.actionSheet)
                         .addAction(new CocoaDialogAction("Cancel", CocoaDialogActionStyle.cancel, new CocoaDialogAction.OnClickListener<CocoaDialogFragment>() {
                             @Override
                             public void onClick(CocoaDialogFragment dialog) {
@@ -210,13 +209,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                 Toast.makeText(getBaseContext(), "Select from Album clicked.", Toast.LENGTH_SHORT).show();
                             }
                         }))
-                        .show(getSupportFragmentManager(), "actionSheet");
+                        .show(getSupportFragmentManager(), "actionSheet");*/
                 break;
             case R.id.btn_action_sheet_other:
-                CocoaDialogFragment.create("This is the title", "This is a message", CocoaDialogStyle.actionSheet)
+                new CocoaDialog.Builder(this, "This is the title", "This is a message", CocoaDialogStyle.actionSheet)
                         .addAction(new CocoaDialogAction("Destructive Choice", CocoaDialogActionStyle.destructive, null))
                         .addAction(new CocoaDialogAction("Safe Choice", CocoaDialogActionStyle.normal, null))
-                        .show(getSupportFragmentManager(), "actionSheet");
+                        .create().show();
+                /*CocoaDialogFragment.create("This is the title", "This is a message", CocoaDialogStyle.actionSheet)
+                        .addAction(new CocoaDialogAction("Destructive Choice", CocoaDialogActionStyle.destructive, null))
+                        .addAction(new CocoaDialogAction("Safe Choice", CocoaDialogActionStyle.normal, null))
+                        .show(getSupportFragmentManager(), "actionSheet");*/
                 break;
         }
 

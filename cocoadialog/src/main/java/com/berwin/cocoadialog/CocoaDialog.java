@@ -5,7 +5,6 @@ import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.support.annotation.StyleRes;
 import android.util.DisplayMetrics;
@@ -20,7 +19,9 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
 import com.berwin.cocoadialog.utils.DensityUtil;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,31 +40,8 @@ public class CocoaDialog extends Dialog implements CocoaDialogInterface {
     private CocoaDialogStyle mPreferredStyle;
     private List<CocoaDialogAction> mActionList;
 
-
-    protected CocoaDialog(@NonNull Context context) {
-        this(context, CocoaDialogStyle.alert);
-    }
-
-    protected CocoaDialog(@NonNull Context context, int themeResId) {
-        this(context, themeResId, CocoaDialogStyle.alert);
-    }
-
-    protected CocoaDialog(@NonNull Context context, boolean cancelable, @Nullable OnCancelListener cancelListener) {
-        this(context, cancelable, CocoaDialogStyle.alert, cancelListener);
-    }
-
-    private CocoaDialog(@NonNull Context context, CocoaDialogStyle preferredStyle) {
-        super(context);
-        setPreferredStyle(preferredStyle);
-    }
-
-    private CocoaDialog(@NonNull Context context, int themeResId, CocoaDialogStyle preferredStyle) {
+    private CocoaDialog(@NonNull Context context, int themeResId, @NonNull CocoaDialogStyle preferredStyle) {
         super(context, themeResId);
-        setPreferredStyle(preferredStyle);
-    }
-
-    private CocoaDialog(@NonNull Context context, boolean cancelable, CocoaDialogStyle preferredStyle, @Nullable OnCancelListener cancelListener) {
-        super(context, cancelable, cancelListener);
         setPreferredStyle(preferredStyle);
     }
 
@@ -134,7 +112,7 @@ public class CocoaDialog extends Dialog implements CocoaDialogInterface {
         if (mPreferredStyle == CocoaDialogStyle.alert) {
             DisplayMetrics dm = getContext().getResources().getDisplayMetrics();
             l.width = Math.min(dm.widthPixels, dm.heightPixels);
-        }else {
+        } else {
             l.width = WindowManager.LayoutParams.MATCH_PARENT;
         }
         l.height = WindowManager.LayoutParams.WRAP_CONTENT;
@@ -143,10 +121,11 @@ public class CocoaDialog extends Dialog implements CocoaDialogInterface {
 
     /**
      * Set the preferred style for the cocoa dialog.
+     *
      * @param preferredStyle Preferred style for the cocoa dialog.
      * @return CocoaDialog instance.
      */
-    public CocoaDialog setPreferredStyle(CocoaDialogStyle preferredStyle) {
+    public CocoaDialog setPreferredStyle(@NonNull CocoaDialogStyle preferredStyle) {
         this.mPreferredStyle = preferredStyle;
         return this;
     }
@@ -154,6 +133,7 @@ public class CocoaDialog extends Dialog implements CocoaDialogInterface {
     /**
      * Set the animation style(include enter animation and exit animation) for the cocoa dialog,
      * only effective on a cocoa dialog with a style of CocoaDialogStyle.Alert.
+     *
      * @param animStyleResId Style resource id of the animation.
      * @return CocoaDialog instance.
      */
@@ -175,6 +155,7 @@ public class CocoaDialog extends Dialog implements CocoaDialogInterface {
 
     /**
      * Set message for the cocoa dialog.
+     *
      * @param title The title for the cocoa dialog.
      * @return CocoaDialog instance.
      */
@@ -185,6 +166,7 @@ public class CocoaDialog extends Dialog implements CocoaDialogInterface {
 
     /**
      * Set message for the cocoa dialog.
+     *
      * @param titleResId The title  resource id for the cocoa dialog.
      * @return CocoaDialog instance.
      */
@@ -195,6 +177,7 @@ public class CocoaDialog extends Dialog implements CocoaDialogInterface {
 
     /**
      * Set message for the cocoa dialog.
+     *
      * @param message The message for the cocoa dialog.
      * @return CocoaDialog instance.
      */
@@ -220,7 +203,7 @@ public class CocoaDialog extends Dialog implements CocoaDialogInterface {
      * @param action CocoaDialogAction, appears as a button of the cocoa dialog.
      * @return Cocoa dialog instance.
      */
-    public CocoaDialog addAction(CocoaDialogAction action) {
+    public CocoaDialog addAction(@NonNull CocoaDialogAction action) {
         if (action.getStyle() == CocoaDialogActionStyle.cancel) {
             if (!mActionList.isEmpty() && mActionList.get(0).getStyle() == CocoaDialogActionStyle.cancel) {
                 throw new IllegalArgumentException("Cocoa dialog can only have one action with a style of CocoaDialogActionStyle.Cancel");
@@ -235,6 +218,7 @@ public class CocoaDialog extends Dialog implements CocoaDialogInterface {
 
     /**
      * Add an EditText to the cocoa dialog, only effective on a cocoa dialog with a style of CocoaDialogStyle.Alert.
+     *
      * @param configurationHandler The handler to configure the edit text, such as text color, hint and default text.
      * @return CocoaDialog instance.
      */
@@ -302,7 +286,7 @@ public class CocoaDialog extends Dialog implements CocoaDialogInterface {
                         mButtonPanel.setBackgroundResource(com.berwin.cocoadialog.R.drawable.cocoa_dialog_corner_radius);
                         if (mActionList.size() > 1) {
                             button.setBackgroundResource(com.berwin.cocoadialog.R.drawable.cocoa_dialog_top_radius);
-                        }else {
+                        } else {
                             needBorder = false;
                             button.setBackgroundResource(com.berwin.cocoadialog.R.drawable.cocoa_dialog_corner_radius);
                         }
@@ -400,17 +384,21 @@ public class CocoaDialog extends Dialog implements CocoaDialogInterface {
         CocoaDialogStyle mPreferredStyle;
         List<CocoaDialogAction> mActionList;
 
-        public Builder(Context context, CocoaDialogStyle preferredStyle) {
+        public Builder(@NonNull Context context) {
+            this(context, null, null, CocoaDialogStyle.alert);
+        }
+
+        public Builder(@NonNull Context context, @NonNull CocoaDialogStyle preferredStyle) {
             this(context, null, null, preferredStyle);
         }
 
 
-        public Builder(Context context, @StringRes int titleRes, @StringRes int messageRes, CocoaDialogStyle preferredStyle) {
+        public Builder(@NonNull Context context, @StringRes int titleRes, @StringRes int messageRes, @NonNull CocoaDialogStyle preferredStyle) {
             this(context, context.getString(titleRes), context.getString(messageRes), preferredStyle);
         }
 
 
-        public Builder(Context context, CharSequence title, CharSequence message, CocoaDialogStyle preferredStyle) {
+        public Builder(@NonNull Context context, CharSequence title, CharSequence message, @NonNull CocoaDialogStyle preferredStyle) {
             mEditTextList = new ArrayList<>();
             mActionList = new ArrayList<>();
             mContext = context;
@@ -420,8 +408,20 @@ public class CocoaDialog extends Dialog implements CocoaDialogInterface {
         }
 
         /**
+         * Set the preferred style for the cocoa dialog.
+         *
+         * @param preferredStyle Preferred style for the cocoa dialog.
+         * @return CocoaDialog.Builder instance.
+         */
+        public Builder setPreferredStyle(@NonNull CocoaDialogStyle preferredStyle) {
+            this.mPreferredStyle = preferredStyle;
+            return this;
+        }
+
+        /**
          * Set the animation style(include enter animation and exit animation) for the cocoa dialog,
          * only effective on a cocoa dialog with a style of CocoaDialogStyle.Alert.
+         *
          * @param animStyleResId Style resource id of the animation.
          * @return CocoaDialog.Builder instance.
          */
@@ -432,6 +432,7 @@ public class CocoaDialog extends Dialog implements CocoaDialogInterface {
 
         /**
          * Set title for the cocoa dialog.
+         *
          * @param title The title for the cocoa dialog.
          * @return CocoaDialog.Builder instance.
          */
@@ -442,6 +443,7 @@ public class CocoaDialog extends Dialog implements CocoaDialogInterface {
 
         /**
          * Set title for the cocoa dialog.
+         *
          * @param titleResId The title resource id for the cocoa dialog.
          * @return CocoaDialog.Builder instance.
          */
@@ -452,6 +454,7 @@ public class CocoaDialog extends Dialog implements CocoaDialogInterface {
 
         /**
          * Set message for the cocoa dialog.
+         *
          * @param message The message for the cocoa dialog.
          * @return CocoaDialog.Builder instance.
          */
@@ -463,6 +466,7 @@ public class CocoaDialog extends Dialog implements CocoaDialogInterface {
 
         /**
          * Set message for the cocoa dialog.
+         *
          * @param messageResId The message resource id for the cocoa dialog.
          * @return CocoaDialog.Builder instance.
          */
@@ -473,10 +477,11 @@ public class CocoaDialog extends Dialog implements CocoaDialogInterface {
 
         /**
          * Add action to cocoa dialog.
+         *
          * @param action CocoaDialogAction, appears as a button of the cocoa dialog.
          * @return CocoaDialog.Builder instance.
          */
-        public Builder addAction(CocoaDialogAction action) {
+        public Builder addAction(@NonNull CocoaDialogAction action) {
             if (action.getStyle() == CocoaDialogActionStyle.cancel) {
                 if (!mActionList.isEmpty() && mActionList.get(0).getStyle() == CocoaDialogActionStyle.cancel) {
                     throw new IllegalArgumentException("Cocoa dialog can only have one action with a style of CocoaDialogActionStyle.Cancel");
@@ -512,13 +517,14 @@ public class CocoaDialog extends Dialog implements CocoaDialogInterface {
 
         /**
          * Create a cocoa dialog.
+         *
          * @return CocoaDialog instance.
          */
         public CocoaDialog create() {
-            CocoaDialog dialog = new CocoaDialog(mContext, android.R.style.Theme_Dialog, mPreferredStyle);
-            dialog.setTitle(mTitle);
-            dialog.setMessage(mMessage);
-            dialog.setAnimStyle(mAnimStyleRes);
+            CocoaDialog dialog = new CocoaDialog(mContext, android.R.style.Theme_Dialog, mPreferredStyle)
+                    .setAnimStyle(mAnimStyleRes)
+                    .setTitleText(mTitle)
+                    .setMessage(mMessage);
             dialog.editTextList = mEditTextList;
             dialog.mActionList = mActionList;
             return dialog;
