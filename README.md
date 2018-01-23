@@ -25,6 +25,18 @@ dependencies {
 }
 ```
 
+或
+
+```
+    repositories {
+        maven { url 'https://jitpack.io' }
+    }
+    		
+    dependencies {
+        compile 'com.github.SunBerwin:CocoaDialog:v1.1.0'
+    }
+```
+
 或者 Maven：
 
 ```
