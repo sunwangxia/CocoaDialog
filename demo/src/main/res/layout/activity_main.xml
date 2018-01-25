@@ -60,6 +60,15 @@
             android:text="Alert with Input"
             android:textAllCaps="false" />
 
+        <Button
+            android:id="@+id/btn_alert_progress_horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_marginTop="8dp"
+            android:text="Alert with Progress Bar"
+            android:textAllCaps="false" />
 
         <TextView
             android:id="@+id/action_sheet"

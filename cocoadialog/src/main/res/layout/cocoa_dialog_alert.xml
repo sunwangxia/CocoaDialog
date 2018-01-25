@@ -20,7 +20,10 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:orientation="vertical"
-            android:padding="12dp">
+            android:paddingTop="16dp"
+            android:paddingBottom="16dp"
+            android:paddingLeft="12dp"
+            android:paddingRight="12dp">
 
             <TextView
                 android:id="@+id/title"
@@ -28,7 +31,7 @@
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:textColor="#000"
-                android:padding="2dp"
+                android:padding="1dp"
                 android:textSize="15sp"
                 android:textStyle="bold"/>
 
@@ -36,10 +39,11 @@
                 android:id="@+id/message"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:padding="2dp"
+                android:padding="1dp"
                 android:gravity="center"
                 android:textColor="#000"
                 android:textSize="13sp"/>
+
         </LinearLayout>
 
         <TextView
