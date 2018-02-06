@@ -22,7 +22,7 @@ allprojects {
 
 ```
 dependencies {
-   compile 'com.github.SunBerwin:CocoaDialog:v1.2.0'
+   compile 'com.github.SunBerwin:CocoaDialog:v1.2.1'
 }
 ```
 
