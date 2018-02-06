@@ -289,7 +289,7 @@ public class CocoaDialogFragment extends DialogFragment implements CocoaDialogIn
     /**
      * Set the current progress to the progress bar.
      *
-     * @param progress The current progress value, ignored if progress bar is null.
+     * @param progress The current progress value, ignored if {@link #addProgressBar(ProgressBarBuildHandler)} not called.
      */
     public void setProgress(int progress) {
         if (mProgressBar != null) {
@@ -301,7 +301,7 @@ public class CocoaDialogFragment extends DialogFragment implements CocoaDialogIn
     /**
      * Get the the current progress of the progress bar.
      *
-     * @return The current progress, if the progress bar is null, return 0.
+     * @return The current progress, return 0 if {@link #addProgressBar(ProgressBarBuildHandler)} not called.
      */
     public int getProgress() {
         return mProgressBar != null ? mProgressBar.getProgress() : 0;

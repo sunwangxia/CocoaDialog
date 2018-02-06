@@ -21,7 +21,9 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+
 import com.berwin.cocoadialog.utils.DensityUtil;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -163,11 +165,12 @@ public class CocoaDialog extends Dialog implements CocoaDialogInterface {
 
     @Override
     public void setTitle(@StringRes int titleResId) {
-        this.mTitle = getContext().getString(titleResId);
+        if (titleResId != 0)
+            this.mTitle = getContext().getString(titleResId);
     }
 
     /**
-     * Set message for the cocoa dialog.
+     * Set title for the cocoa dialog.
      *
      * @param title The title for the cocoa dialog.
      * @return {@link CocoaDialog} instance.
@@ -178,13 +181,14 @@ public class CocoaDialog extends Dialog implements CocoaDialogInterface {
     }
 
     /**
-     * Set message for the cocoa dialog.
+     * Set title for the cocoa dialog.
      *
-     * @param titleResId The title  resource id for the cocoa dialog.
+     * @param titleResId The title  resource id for the cocoa dialog, ignored when resource id is zero.
      * @return {@link CocoaDialog} instance.
      */
     public CocoaDialog setTitleText(@StringRes int titleResId) {
-        setTitle(titleResId);
+        if (titleResId != 0)
+            setTitle(titleResId);
         return this;
     }
 
@@ -202,11 +206,12 @@ public class CocoaDialog extends Dialog implements CocoaDialogInterface {
     /**
      * Set message for the cocoa dialog.
      *
-     * @param messageResId The message resource id for the cocoa dialog.
+     * @param messageResId The message resource id for the cocoa dialog, ignored when resource id is zero.
      * @return {@link CocoaDialog} instance.
      */
     public CocoaDialog setMessage(@StringRes int messageResId) {
-        this.mMessage = getContext().getString(messageResId);
+        if (messageResId != 0)
+            this.mMessage = getContext().getString(messageResId);
         return this;
     }
 
@@ -275,7 +280,7 @@ public class CocoaDialog extends Dialog implements CocoaDialogInterface {
     /**
      * Set the current progress to the progress bar.
      *
-     * @param progress The current progress value, ignored if progress bar is null.
+     * @param progress The current progress value, ignored if {@link #addProgressBar(ProgressBarBuildHandler)} not called.
      */
     public void setProgress(int progress) {
         if (mProgressBar != null) {
@@ -287,7 +292,7 @@ public class CocoaDialog extends Dialog implements CocoaDialogInterface {
     /**
      * Get the the current progress of the progress bar.
      *
-     * @return The current progress, if the progress bar is null, return 0.
+     * @return The current progress, return 0 if {@link #addProgressBar(ProgressBarBuildHandler)} not called.
      */
     public int getProgress() {
         return mProgressBar != null ? mProgressBar.getProgress() : 0;
@@ -447,24 +452,25 @@ public class CocoaDialog extends Dialog implements CocoaDialogInterface {
         List<CocoaDialogAction> mActionList;
 
         public Builder(@NonNull Context context) {
-            this(context, null, null, CocoaDialogStyle.alert);
+            this(context, CocoaDialogStyle.alert);
         }
 
         public Builder(@NonNull Context context, @NonNull CocoaDialogStyle preferredStyle) {
-            this(context, null, null, preferredStyle);
+            mContext = context;
+            mPreferredStyle = preferredStyle;
         }
 
-
         public Builder(@NonNull Context context, @StringRes int titleRes, @StringRes int messageRes, @NonNull CocoaDialogStyle preferredStyle) {
-            this(context, context.getString(titleRes), context.getString(messageRes), preferredStyle);
+            this(context, preferredStyle);
+            mTitle = titleRes != 0 ? context.getString(titleRes) : null;
+            mMessage = messageRes != 0 ? context.getString(messageRes) : null;
         }
 
 
         public Builder(@NonNull Context context, CharSequence title, CharSequence message, @NonNull CocoaDialogStyle preferredStyle) {
-            mContext = context;
+            this(context, preferredStyle);
             mTitle = title;
             mMessage = message;
-            mPreferredStyle = preferredStyle;
         }
 
         /**
@@ -504,11 +510,12 @@ public class CocoaDialog extends Dialog implements CocoaDialogInterface {
         /**
          * Set title for the cocoa dialog.
          *
-         * @param titleResId The title resource id for the cocoa dialog.
+         * @param titleResId The title resource id for the cocoa dialog, ignored when resource id is zero.
          * @return {@link CocoaDialog.Builder} instance.
          */
         public Builder setTitle(@StringRes int titleResId) {
-            this.mTitle = mContext.getString(titleResId);
+            if (titleResId != 0)
+                this.mTitle = mContext.getString(titleResId);
             return this;
         }
 
@@ -527,11 +534,12 @@ public class CocoaDialog extends Dialog implements CocoaDialogInterface {
         /**
          * Set message for the cocoa dialog.
          *
-         * @param messageResId The message resource id for the cocoa dialog.
+         * @param messageResId The message resource id for the cocoa dialog, ignored when resource id is zero.
          * @return {@link CocoaDialog.Builder} instance.
          */
         public Builder setMessage(@StringRes int messageResId) {
-            this.mMessage = mContext.getString(messageResId);
+            if (messageResId != 0)
+                this.mMessage = mContext.getString(messageResId);
             return this;
         }
 

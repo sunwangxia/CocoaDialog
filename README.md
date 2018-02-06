@@ -6,27 +6,6 @@
 
 ![screenshot](https://github.com/swx007/CocoaDialog/blob/master/screenshot/screenshot.gif)
 
-## Release Notes
-
-#### Release v1.2.0
-
-- 新增ProgressBar支持，新增如下Api:
-
-	| 方法        | 参数    |  说明  |
-	| :-----:   | :-----:  | :----: |
-	| addProgressBar| ProgressBarBuildHandler|   为对话框添加ProgressBar，参数类型为新增接口，用于构建ProgressBar，回调方法中传入的Context在使用CocoaDialogFragment时为null，CocoaDialog时则为Context实例    |
-	| getProgress        |  无   |   获取当前的progress值，若未调用addProgressBar添加ProgressBar，则返回 0    |
-	| setProgress        |  int  |   设置当前progress值，若未调用addProgressBar添加ProgressBar，则自动忽略该操作  |
-
-#### Release v1.1.0
-
-- 由于旧版使用DialogFragment实现存在一定的缺陷，如屏幕切换时发生异常导致应用崩溃等问题。1.1.0版本中新增了Dialog的实现方式，Api相比之前有一定改动，具体使用方法可在Demo中看到。
-
-- 保留了旧版的DialogFragment的实现方式，原类名修改为CocoaDialogFragment，构建方法build更名为create，其他Api与旧版一致。
-
-- 优化了alert样式对话框横屏下的展示，同时修复了旧版DialogFragment由于手机屏幕旋转崩溃的问题，不过对话框恢复后按钮及输入框无法恢复，目前尚未找到合适的方法，如果你有好的建议，欢迎联系我。
-
-
 ## 获取CocoaDialog
 
 请在project/build.gradle文件中添加如下内容:
