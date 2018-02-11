@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.text.InputType;
-import android.text.TextUtils;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ProgressBar;
@@ -14,15 +13,18 @@ import android.widget.Toast;
 import com.berwin.cocoadialog.CocoaDialog;
 import com.berwin.cocoadialog.CocoaDialogAction;
 import com.berwin.cocoadialog.CocoaDialogActionStyle;
-import com.berwin.cocoadialog.CocoaDialogInterface;
 import com.berwin.cocoadialog.CocoaDialogStyle;
 import com.berwin.cocoadialog.EditTextConfigurationHandler;
 import com.berwin.cocoadialog.ProgressBarBuildHandler;
 
+import java.util.List;
 import java.util.Random;
 
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+
+    Handler handler = new Handler();
+    TestProgressRunner loading = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,83 +47,60 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 new CocoaDialog.Builder(this, CocoaDialogStyle.alert)
                         .setTitle("This is the title")
                         .setMessage("This is a message")
-                        .addAction(new CocoaDialogAction("OK", CocoaDialogActionStyle.cancel, new CocoaDialogAction.OnClickListener<CocoaDialog>() {
+                        .addAction(new CocoaDialogAction("OK", CocoaDialogActionStyle.cancel, new CocoaDialogAction.OnClickListener() {
                             @Override
                             public void onClick(CocoaDialog dialog) {
                                 Toast.makeText(getBaseContext(), "OK clicked.", Toast.LENGTH_SHORT).show();
                             }
                         }))
-                        .create().show();
-                /*CocoaDialogFragment.create("This is the title", "This is a message", CocoaDialogStyle.alert)
-                        .addAction(new CocoaDialogAction("OK", CocoaDialogActionStyle.cancel, new CocoaDialogAction.OnClickListener<CocoaDialogFragment>() {
-                            @Override
-                            public void onClick(CocoaDialogFragment dialog) {
-                                Toast.makeText(getBaseContext(), "OK clicked.", Toast.LENGTH_SHORT).show();
-                            }
-                        }))
-                        .show(getSupportFragmentManager(), "alert");*/
+                        .build().show();
                 break;
             case R.id.btn_alert_ok_cancel:
-                //不需要响应点击事件时listener直接传入null
-                new CocoaDialog.Builder(this, "This is the title", "This is a message", CocoaDialogStyle.alert)
+                //不需要响应点击事件时listener直接传入null，设置title和message也支持使用strings资源id。
+                new CocoaDialog.Builder(this, CocoaDialogStyle.alert)
+                        .setTitle(R.string.dialog_title)
+                        .setMessage(R.string.dialog_message)
                         .addAction(new CocoaDialogAction("Cancel", CocoaDialogActionStyle.cancel, null))
                         .addAction(new CocoaDialogAction("OK", CocoaDialogActionStyle.normal, new CocoaDialogAction.OnClickListener() {
                             @Override
-                            public void onClick(CocoaDialogInterface dialog) {
+                            public void onClick(CocoaDialog dialog) {
                                 Toast.makeText(getBaseContext(), "OK clicked.", Toast.LENGTH_SHORT).show();
                             }
                         }))
-                        .create().show();
-                /*CocoaDialogFragment.create("This is the title", "This is a message", CocoaDialogStyle.alert)
-                        .addAction(new CocoaDialogAction("Cancel", CocoaDialogActionStyle.cancel, null))
-                        .addAction(new CocoaDialogAction("OK", CocoaDialogActionStyle.normal, new CocoaDialogAction.OnClickListener<CocoaDialogFragment>() {
-                            @Override
-                            public void onClick(CocoaDialogFragment dialog) {
-                                Toast.makeText(getBaseContext(), "OK clicked.", Toast.LENGTH_SHORT).show();
-                            }
-                        }))
-                        .show(getSupportFragmentManager(), "alert");*/
+                        .build().show();
                 break;
             case R.id.btn_alert_other:
-                new CocoaDialog.Builder(this, "This is the title", "This is a message", CocoaDialogStyle.alert)
+                //超过3个按钮时action会占据整行的空间，cancel按钮会自动保持在最底部，无论何时添加到对话框中
+                new CocoaDialog.Builder(this, CocoaDialogStyle.alert)
+                        .setTitle(R.string.dialog_title)
+                        .setMessage(R.string.dialog_message)
                         .addAction(new CocoaDialogAction("Cancel", CocoaDialogActionStyle.cancel, null))
                         .addAction(new CocoaDialogAction("Destructive Choice", CocoaDialogActionStyle.destructive, new CocoaDialogAction.OnClickListener() {
                             @Override
-                            public void onClick(CocoaDialogInterface dialog) {
+                            public void onClick(CocoaDialog dialog) {
                                 Toast.makeText(getBaseContext(), "Destructive choice clicked.", Toast.LENGTH_SHORT).show();
                             }
                         }))
                         .addAction(new CocoaDialogAction("Safe Choice", CocoaDialogActionStyle.normal, new CocoaDialogAction.OnClickListener() {
                             @Override
-                            public void onClick(CocoaDialogInterface dialog) {
+                            public void onClick(CocoaDialog dialog) {
                                 Toast.makeText(getBaseContext(), "Safe choice clicked.", Toast.LENGTH_SHORT).show();
                             }
                         }))
-                        .create().show();
-                /*CocoaDialogFragment.create("Other Alert Title", "Other alert message", CocoaDialogStyle.alert)
-                        .addAction(new CocoaDialogAction("Cancel", CocoaDialogActionStyle.cancel, null))
-                        .addAction(new CocoaDialogAction("Destructive Choice", CocoaDialogActionStyle.destructive, new CocoaDialogAction.OnClickListener<CocoaDialogFragment>() {
-                            @Override
-                            public void onClick(CocoaDialogFragment dialog) {
-                                Toast.makeText(getBaseContext(), "Destructive choice clicked.", Toast.LENGTH_SHORT).show();
-                            }
-                        }))
-                        .addAction(new CocoaDialogAction("Safe Choice", CocoaDialogActionStyle.normal, new CocoaDialogAction.OnClickListener<CocoaDialogFragment>() {
-                            @Override
-                            public void onClick(CocoaDialogFragment dialog) {
-                                Toast.makeText(getBaseContext(), "Safe choice clicked.", Toast.LENGTH_SHORT).show();
-                            }
-                        }))
-                        .show(getSupportFragmentManager(), "alert");*/
+                        .build().show();
                 break;
             case R.id.btn_alert_with_input:
-                new CocoaDialog.Builder(this, "This is the title", "This is a message", CocoaDialogStyle.alert)
+                // 通过调用getEditTextList可获取到之前通过addEditText添加的EditText的列表，遍历列表可取得用户输入的文本
+                new CocoaDialog.Builder(this, CocoaDialogStyle.alert)
+                        .setTitle(R.string.dialog_title)
+                        .setMessage(R.string.dialog_message)
                         .addAction(new CocoaDialogAction("Cancel", CocoaDialogActionStyle.cancel, null))
-                        .addAction(new CocoaDialogAction("OK", CocoaDialogActionStyle.normal, new CocoaDialogAction.OnClickListener<CocoaDialog>() {
+                        .addAction(new CocoaDialogAction("OK", CocoaDialogActionStyle.normal, new CocoaDialogAction.OnClickListener() {
                             @Override
                             public void onClick(CocoaDialog dialog) {
-                                if (dialog.editTextList.size() > 0 && !TextUtils.isEmpty(dialog.editTextList.get(0).getText())) {
-                                    Toast.makeText(getBaseContext(), dialog.editTextList.get(0).getText(), Toast.LENGTH_SHORT).show();
+                                List<EditText> editTextList = dialog.getEditTextList();
+                                if (editTextList != null && editTextList.size() > 0 && editTextList.get(0).length() > 0) {
+                                    Toast.makeText(getBaseContext(), editTextList.get(0).getText(), Toast.LENGTH_SHORT).show();
                                 }
                             }
                         }))
@@ -142,36 +121,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                 editText.setTypeface(Typeface.DEFAULT);
                             }
                         })
-                        .create().show();
-                /*CocoaDialogFragment.create("This is the title", "This is a message", CocoaDialogStyle.alert)
-                        .addAction(new CocoaDialogAction("Cancel", CocoaDialogActionStyle.cancel, null))
-                        .addAction(new CocoaDialogAction("OK", CocoaDialogActionStyle.normal, new CocoaDialogAction.OnClickListener<CocoaDialogFragment>() {
-
-                            @Override
-                            public void onClick(CocoaDialogFragment dialog) {
-                                if (dialog.editTextList.size() > 0 && !TextUtils.isEmpty(dialog.editTextList.get(0).getText())) {
-                                    Toast.makeText(getBaseContext(), dialog.editTextList.get(0).getText(), Toast.LENGTH_SHORT).show();
-                                }
-                            }
-                        }))
-                        .addEditText(this, new EditTextConfigurationHandler() {
-                            @Override
-                            public void onEditTextAdded(EditText editText) {
-                                editText.setHint("Enter the username.");
-                                editText.setTextSize(14);
-                                editText.setTypeface(Typeface.DEFAULT);
-                            }
-                        })
-                        .addEditText(this, new EditTextConfigurationHandler() {
-                            @Override
-                            public void onEditTextAdded(EditText editText) {
-                                editText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
-                                editText.setHint("Enter the password.");
-                                editText.setTextSize(14);
-                                editText.setTypeface(Typeface.DEFAULT);
-                            }
-                        })
-                        .show(getSupportFragmentManager(), "alert");*/
+                        .build().show();
 
                 break;
             case R.id.btn_alert_progress_horizontal:
@@ -181,27 +131,21 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         .addProgressBar(new ProgressBarBuildHandler<ProgressBar>() {
                             @Override
                             public ProgressBar build(Context context) {
-//                                return (ProgressBar) LayoutInflater.from(context).inflate(R.layout.horizontal_progressbar, null);
-//                                return (ProgressBar) LayoutInflater.from(context).inflate(R.layout.progressbar, null);
                                 return new ProgressBar(context, null, android.R.attr.progressBarStyleHorizontal);
                             }
-                        }).create();
-                /*// 注意：由于DialogFragment在onAttach之前是拿不到Context的，所以这里回调中传进来的Context为null，请忽略此参数，使用当前Context来构建ProgressBar
-                final CocoaDialogFragment dialog = CocoaDialogFragment.create("下载文件", "正在拼命加载中...", CocoaDialogStyle.alert)
-                        .addProgressBar(new ProgressBarBuildHandler<ProgressBar>() {
+                        }).addAction(new CocoaDialogAction("取消", CocoaDialogActionStyle.cancel, new CocoaDialogAction.OnClickListener() {
                             @Override
-                            public ProgressBar build(Context context) {
-//                                return (ProgressBar) LayoutInflater.from(getBaseContext()).inflate(R.layout.horizontal_progressbar, null);
-//                                return (ProgressBar) LayoutInflater.from(getBaseContext()).inflate(R.layout.progressbar, null);
-                                return new ProgressBar(getBaseContext(), null, android.R.attr.progressBarStyleHorizontal);
+                            public void onClick(CocoaDialog dialog) {
+                                handler.removeCallbacks(loading);
                             }
-                        });*/
+                        })).build();
                 dialog.setCancelable(false);
+
                 // 模拟网络下载
-                final Handler handler = new Handler();
-                final Runnable loading = new Runnable() {
+                loading = new TestProgressRunner(dialog) {
+
                     @Override
-                    public void run() {
+                    void run(CocoaDialog dialog) {
                         Random random = new Random();
                         int progress = dialog.getProgress() + random.nextInt(10);
                         dialog.setProgress(progress);
@@ -212,69 +156,53 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         }
                     }
                 };
-                dialog.addAction(new CocoaDialogAction("取消", CocoaDialogActionStyle.cancel, new CocoaDialogAction.OnClickListener() {
-                    @Override
-                    public void onClick(CocoaDialogInterface dialog) {
-                        handler.removeCallbacks(loading);
-                    }
-                }));
                 dialog.show();
-//                dialog.show(getSupportFragmentManager(), "Alert with ProgressBar");
                 handler.postDelayed(loading, 100);
                 break;
             case R.id.btn_action_sheet_ok_cancel:
-                //不需要title和message可调用单一参数的build方法，之后如果需要可通过setter方法进行设置
                 new CocoaDialog.Builder(this, CocoaDialogStyle.actionSheet)
                         .addAction(new CocoaDialogAction("Cancel", CocoaDialogActionStyle.cancel, new CocoaDialogAction.OnClickListener() {
                             @Override
-                            public void onClick(CocoaDialogInterface dialog) {
+                            public void onClick(CocoaDialog dialog) {
                                 Toast.makeText(getBaseContext(), "Cancel clicked.", Toast.LENGTH_SHORT).show();
                             }
                         }))
                         .addAction(new CocoaDialogAction("Take Photo", CocoaDialogActionStyle.destructive, new CocoaDialogAction.OnClickListener() {
                             @Override
-                            public void onClick(CocoaDialogInterface dialog) {
+                            public void onClick(CocoaDialog dialog) {
                                 Toast.makeText(getBaseContext(), "Take photo clicked.", Toast.LENGTH_SHORT).show();
                             }
                         }))
                         .addAction(new CocoaDialogAction("Select from Album", CocoaDialogActionStyle.normal, new CocoaDialogAction.OnClickListener() {
                             @Override
-                            public void onClick(CocoaDialogInterface dialog) {
+                            public void onClick(CocoaDialog dialog) {
                                 Toast.makeText(getBaseContext(), "Select from Album clicked.", Toast.LENGTH_SHORT).show();
                             }
                         }))
-                        .create().show();
-                /*CocoaDialogFragment.create(CocoaDialogStyle.actionSheet)
-                        .addAction(new CocoaDialogAction("Cancel", CocoaDialogActionStyle.cancel, new CocoaDialogAction.OnClickListener<CocoaDialogFragment>() {
-                            @Override
-                            public void onClick(CocoaDialogFragment dialog) {
-                                Toast.makeText(getBaseContext(), "Cancel clicked.", Toast.LENGTH_SHORT).show();
-                            }
-                        }))
-                        .addAction(new CocoaDialogAction("Take Photo", CocoaDialogActionStyle.destructive, new CocoaDialogAction.OnClickListener<CocoaDialogFragment>() {
-                            @Override
-                            public void onClick(CocoaDialogFragment dialog) {
-                                Toast.makeText(getBaseContext(), "Take photo clicked.", Toast.LENGTH_SHORT).show();
-                            }
-                        }))
-                        .addAction(new CocoaDialogAction("Select from Album", CocoaDialogActionStyle.normal, new CocoaDialogAction.OnClickListener<CocoaDialogFragment>() {
-                            @Override
-                            public void onClick(CocoaDialogFragment dialog) {
-                                Toast.makeText(getBaseContext(), "Select from Album clicked.", Toast.LENGTH_SHORT).show();
-                            }
-                        }))
-                        .show(getSupportFragmentManager(), "actionSheet");*/
+                        .build().show();
                 break;
             case R.id.btn_action_sheet_other:
-                new CocoaDialog.Builder(this, "This is the title", "This is a message", CocoaDialogStyle.actionSheet)
+                new CocoaDialog.Builder(this, CocoaDialogStyle.actionSheet)
+                        .setTitle(R.string.dialog_title)
+                        .setMessage(R.string.dialog_message)
                         .addAction(new CocoaDialogAction("Destructive Choice", CocoaDialogActionStyle.destructive, null))
                         .addAction(new CocoaDialogAction("Safe Choice", CocoaDialogActionStyle.normal, null))
-                        .create().show();
-                /*CocoaDialogFragment.create("This is the title", "This is a message", CocoaDialogStyle.actionSheet)
-                        .addAction(new CocoaDialogAction("Destructive Choice", CocoaDialogActionStyle.destructive, null))
-                        .addAction(new CocoaDialogAction("Safe Choice", CocoaDialogActionStyle.normal, null))
-                        .show(getSupportFragmentManager(), "actionSheet");*/
+                        .build().show();
                 break;
         }
+    }
+
+    abstract class TestProgressRunner implements Runnable {
+        private CocoaDialog mDialog;
+        TestProgressRunner(CocoaDialog dialog) {
+            this.mDialog = dialog;
+        }
+
+        @Override
+        public void run() {
+            run(mDialog);
+        }
+
+        abstract void run(CocoaDialog dialog);
     }
 }

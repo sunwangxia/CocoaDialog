@@ -22,16 +22,18 @@ allprojects {
 
 ```
 dependencies {
-   compile 'com.github.SunBerwin:CocoaDialog:v1.2.1'
+   compile 'com.github.SunBerwin:CocoaDialog:v1.2.2'
 }
 ```
 
 ## 如何使用 CocoaDialog
 
-**CocoDialog**的使用方法非常简单，通过调用CocoaDialogFragment.create(CharSequence title, CharSequence message, CocoaDialogStyle preferredStyle)构建出对话框实例或new CocoaDialog.Builder(Context context, CharSequence title, CharSequence message, CococaDialogStyle preferredStyle)构建CocoaDialog.Builder，之后调用addAction设置对话框按钮，之后再调用show方法即可。
+**CocoDialog**的使用方法非常简单，首先实例化CocoaDialog.Builder，配置对话框的标题，信息及按钮等信息，之后调用build()方法构建对话框，再调用show()进行显示，示例代码如下：
 
 ```
-    CocoaDialog.Builder builder = new CocoaDialog.Builder(this, "This is the title", "This is a message", CocoaDialogStyle.alert);  
+    CocoaDialog.Builder builder = new CocoaDialog.Builder(this, CocoaDialogStyle.alert);  
+    builder.setTitle("Title for CocoaDialog");
+    builder.setMessage("This is a message.");
     builder.addAction(new CocoaDialogAction("Cancel", CocoaDialogActionStyle.cancel, null));
     builder.addAction(new CocoaDialogAction("OK", CocoaDialogActionStyle.normal, new CocoaDialogAction.OnClickListener<CocoaDialog>() {
         @Override
@@ -39,73 +41,79 @@ dependencies {
             Toast.makeText(getBaseContext(), "The ok button is clicked.", Toast.LENGTH_SHORT).show();
         }
     }));
-    builder.create().show();
-```
-
-或
-
-```
-	CocoaDialogFragment dialog = CocoaDialogFragment.create("This is the title", "This is a message", CocoaDialogStyle.alert);
-	dialog.addAction(new CocoaDialogAction("Cancel", CocoaDialogActionStyle.cancel, null));
-    dialog.addAction(new CocoaDialogAction("OK", CocoaDialogActionStyle.normal, new CocoaDialogAction.OnClickListener<CocoaDialogFragment>() {
-        @Override
-        public void onClick(CocoaDialogFragment dialog) {
-            Toast.makeText(getBaseContext(), "The ok button is clicked.", Toast.LENGTH_SHORT).show();
-        }
-    }));
-    dialog.show(getSupportFragmentManager(), "alert");
-
+    builder.build().show();
 ```
 
 当然，你也可以使用如下的链式操作:
 
 
 ```
-	new CocoaDialog.Builder(this, "This is the title", "This is a message", CocoaDialogStyle.alert)
+	new CocoaDialog.Builder(this, CocoaDialogStyle.alert)
+	    .setTitle("Title for CocoaDialog")
+	    .setMessage("This is a message.")
     	.addAction(new CocoaDialogAction("Cancel", CocoaDialogActionStyle.cancel, null))
-    	.addAction(new CocoaDialogAction("OK", CocoaDialogActionStyle.normal, new CocoaDialogAction.OnClickListener<CocoaDialog>() {
+    	.addAction(new CocoaDialogAction("OK", CocoaDialogActionStyle.normal, new CocoaDialogAction.OnClickListener() {
         	@Override
         	public void onClick(CocoaDialog dialog) {
             	Toast.makeText(getBaseContext(), "The ok button is clicked.", Toast.LENGTH_SHORT).show();
         	}
     	}))
-    	.create().show();
+    	.build().show();
 
 ```
 
-或
+## 底部弹出菜单样式
+
+**CocoaDialog**提供两种样式可供选择，一种为普通Alert对话框，一种为底部弹出菜单，如需使用底部弹出菜单样式，只需在构建对话框实例时选用actionSheet样式，示例代码如下：
 
 ```
-	CocoaDialogFragment.create("This is the title", "This is a message", CocoaDialogStyle.alert)
-                        .addAction(new CocoaDialogAction("OK", CocoaDialogActionStyle.cancel, null))
-                        .show(getSupportFragmentManager(), "alert");
+    new CocoaDialog.Builder(this, CocoaDialogStyle.actionSheet)
+    	.addAction(new CocoaDialogAction("Cancel", CocoaDialogActionStyle.cancel, null));
+    	.addAction(new CocoaDialogAction("OK", CocoaDialogActionStyle.normal, new CocoaDialogAction.OnClickListener() {
+        	@Override
+        	public void onClick(CocoaDialog dialog) {
+            	Toast.makeText(getBaseContext(), "The ok button is clicked.", Toast.LENGTH_SHORT).show();
+        	}
+    	}))
+    	.build().show();
 ```
+
 
 ## 对话框按钮
 
-**CocoaDialog**中的按钮，即**CocoaDialogAction**，共提供三种样式可供选择，第一种为普通按钮，对应枚举值为CocoaDialogActionStyle.normal，文本颜色为#007AFF；第二种为取消按钮，对应枚举值为CocoaDialogActionStyle.cancel，文本颜色同normal，当对话框为alert样式时，若按钮少于三个，则取消按钮总在左边，若按钮多于三个，则取消按钮总在最下方；若对话框为actionSheet样式时，取消按钮则在最下方；另外还有一种危险操作的样式，对应枚举值为CocoaDialogActionStyle.destructive，样式与普通按钮相同，文本颜色为红色(#FF0000)，可用于提示用户该操作为危险操作。  
+**CocoaDialog**中的按钮，即**CocoaDialogAction**，共提供三种样式可供选择:
 
-**CocoaDialogAction**的构建方法CocoaDialogAction(String title, CocoaDialogActionStyle style, OnClickListener listener)中共有三个参数，第一个参数为按钮显示的文本，第二个参数为按钮的样式，第三个为按钮点击动作的监听器，由于最新版本增加了Dialog实现，为了兼容旧版DialogFragment的实现，该接口使用泛型设计，调用时需要根据当用使用的是CocoaDialog或者CocoaDialogFragment传入对应的类型，当用户按下按钮时将会回调监听器的onClick<T>(T dialog)方法。
+* 普通按钮，对应枚举值为CocoaDialogActionStyle.normal，文本颜色为#007AFF
+* 取消按钮，对应枚举值为CocoaDialogActionStyle.cancel，文本颜色同normal，当对话框为alert样式时，若按钮少于三个，则取消按钮总在左边，若按钮多于三个，则取消按钮总在最下方；若对话框为actionSheet样式时，取消按钮则在最下方；
+* 危险操作，对应枚举值为CocoaDialogActionStyle.destructive，样式与普通按钮相同，文本颜色为红色(#FF0000)，可用于提示用户该操作为危险操作。  
 
-***注：虽然回调方法中传入了CocoaDialog或CocoaDialogFragment实例，但内部已经默认将对话框关闭掉了，无需再手动调用dismiss方法。***
+**CocoaDialogAction**的构建方法CocoaDialogAction(String title, CocoaDialogActionStyle style, OnClickListener listener)中共有三个参数：
 
+* title: 按钮显示的文本，类型为String
+* style: 按钮的样式，类型为枚举类型CocoaDialogActionStyle
+* listener: 按钮点击事件监听器，按钮点击会回调监听器的onClick方法
+
+> 注：虽然回调方法中传入了CocoaDialog实例，但由于内部已经默认将对话框关闭掉了，调用者无需手动调用dismiss方法来取消对话框。
 
 ## 带输入的对话框
 
-如果使用的是alert样式的**CocoaDialog**，可通过调用addEditText(EditTextConfigurationHandler configurationHandler)或addEditText(Context context, EditTextConfigurationHandler configurationHandler)方法来为对话框添加文本输入框，用户可在EditTextConfigurationHandler的回调方法onEditTextAdded(EditText editText)中对添加到对话框中的输入框进行配置，如果修改输入类型，提示文本等。
+如果使用的是alert样式的**CocoaDialog**，可通过调用addEditText(EditTextConfigurationHandler configurationHandler)方法来为对话框添加文本输入框，用户可在EditTextConfigurationHandler的回调方法onEditTextAdded(EditText editText)中对添加到对话框中的输入框进行配置，如果修改输入类型，提示文本等。
 
-> 注意，addEditText方法仅在alert样式下生效。  
+> 注意，addEditText方法仅在alert样式下生效，且与addProgressBar方法互斥，两个方法同时调用只有最后调用的方法会生效。  
 
-文本框的内容可通过遍历 **CocoaDialog** 实例中的数组 ***editTextList*** 获取。
+通过调用 **CocoaDialog.getEditTextList()** 可获取到添加到对话框中的所有输入框，遍历该列表可获取所有文本框的实例，可进一步获取到用户输入的文本内容，列表中的顺序与添加顺序相同。
+
+示例代码如下：
 
 ```
     new CocoaDialog.Builder(this, "This is the title", "This is a message", CocoaDialogStyle.alert)
     	.addAction(new CocoaDialogAction("Cancel", CocoaDialogActionStyle.cancel, null));
-    	.addAction(new CocoaDialogAction("OK", CocoaDialogActionStyle.normal, new CocoaDialogAction.OnClickListener<CocoaDialog>() {
+    	.addAction(new CocoaDialogAction("OK", CocoaDialogActionStyle.normal, new CocoaDialogAction.OnClickListener() {
         	@Override
         	public void onClick(CocoaDialog dialog) {
-            	if (dialog.editTextList.size() > 0 && !TextUtils.isEmpty(dialog.editTextList.get(0).getText())) {
-                	Toast.makeText(getBaseContext(), dialog.editTextList.get(0).getText(), Toast.LENGTH_SHORT).show();
+        	    List<EditText> editTextList = dialog.getEditTextList();
+            	if (editTextList != null && editTextList.size() > 0 && editTextList.get(0).length() > 0) {
+                	Toast.makeText(getBaseContext(), editTextList.get(0).getText(), Toast.LENGTH_SHORT).show();
             	}
         	}
     	}))
@@ -122,26 +130,37 @@ dependencies {
             	editText.setHint("Enter the password.");
         	}
     	})
-    	.create().show();
+    	.build().show();
 ```
 
 
-## 底部弹出菜单样式
+## 带进度条的对话框
 
-**CocoaDialog**提供两种样式可供选择，一种为普通Alert对话框，一种为底部弹出菜单，如需使用底部弹出菜单样式，只需在构建对话框实例时选用actionSheet样式：
+如果使用的是alert样式的**CocoaDialog**，可通过调用addProgressBar(ProgressBarBuildHandler handler)方法来为对话框添加一个进度条，需在ProgressBarBuildHandler的回调方法build(Context context)中构建并返回一个ProgressBar或其任意子类，之后可通过调用 **CocoaDialog.setProgress(int progress)** 或 **CocoaDialog.getProgress()** 修改或获取当前进度条的进度。
+
+> 注意，addProgressBar方法仅在alert样式下生效，且与addEditText方法互斥，两个方法同时调用只有最后调用的方法会生效。  
 
 ```
-    new CocoaDialog.Builder(this, "This is the title", "This is a message", CocoaDialogStyle.actionSheet)
-    	.addAction(new CocoaDialogAction("Cancel", CocoaDialogActionStyle.cancel, null));
-    	.addAction(new CocoaDialogAction("OK", CocoaDialogActionStyle.normal, new CocoaDialogAction.OnClickListener<CocoaDialog>() {
-        	@Override
-        	public void onClick(CocoaDialog dialog) {
-            	Toast.makeText(getBaseContext(), "The ok button is clicked.", Toast.LENGTH_SHORT).show();
-        	}
-    	}))
-    	.create().show();
+    final CocoaDialog dialog = new CocoaDialog.Builder(this)
+                        .setTitle("下载文件")
+                        .setMessage("正在拼命加载中...")
+                        .addProgressBar(new ProgressBarBuildHandler<ProgressBar>() {
+                            @Override
+                            public ProgressBar build(Context context) {
+                                return new ProgressBar(context, null, android.R.attr.progressBarStyleHorizontal);
+                            }
+                        }).addAction(new CocoaDialogAction("取消", CocoaDialogActionStyle.cancel, new CocoaDialogAction.OnClickListener() {
+                            @Override
+                            public void onClick(CocoaDialog dialog) {
+                                // 取消下载的操作
+                            }
+                        })).build();
+    dialog.show();
+    new Handler().postDelayed(new Runnable(){
+    	public void run() {
+    		dialog.setProgress(50);
+    }, 1000);
 ```
-
 
 ## 反馈
 

@@ -27,26 +27,31 @@ import com.berwin.cocoadialog.utils.DensityUtil;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CocoaDialog extends Dialog implements CocoaDialogInterface {
+public class CocoaDialog extends Dialog {
 
-    @Nullable
-    public List<EditText> editTextList;
-
-    private TextView mPanelBorder;
-    private ProgressBar mProgressBar;
     private LinearLayout mContentPanel;
     private LinearLayout mButtonPanel;
     private LinearLayout mHeaderPanel;
+    private TextView mPanelBorder;
 
-    private CharSequence mTitle;
-    private CharSequence mMessage;
-    private int mAnimStyleResId = 0;
-    private CocoaDialogStyle mPreferredStyle;
-    private List<CocoaDialogAction> mActionList;
+    private final ProgressBar mProgressBar;
+    private final List<EditText> mEditTextList;
 
-    private CocoaDialog(@NonNull Context context, int themeResId, @NonNull CocoaDialogStyle preferredStyle) {
-        super(context, themeResId);
-        setPreferredStyle(preferredStyle);
+    private final CharSequence mTitle;
+    private final CharSequence mMessage;
+    private final int mAnimStyleResId;
+    private final CocoaDialogStyle mPreferredStyle;
+    private final List<CocoaDialogAction> mActionList;
+
+    private CocoaDialog(Builder builder) {
+        super(builder.context, android.R.style.Theme_Dialog);
+        this.mTitle = builder.title;
+        this.mMessage = builder.message;
+        this.mActionList = builder.actionList;
+        this.mProgressBar = builder.progressBar;
+        this.mEditTextList = builder.editTextList;
+        this.mAnimStyleResId = builder.animStyleRes;
+        this.mPreferredStyle = builder.preferredStyle;
     }
 
     @Override
@@ -59,13 +64,13 @@ public class CocoaDialog extends Dialog implements CocoaDialogInterface {
         View contentView;
         if (mPreferredStyle == CocoaDialogStyle.alert) {
             contentView = LayoutInflater.from(getContext()).inflate(com.berwin.cocoadialog.R.layout.cocoa_dialog_alert, null, false);
-            if (mAnimStyleResId <= 0) {
+            if (mAnimStyleResId == 0) {
                 mWindow.setWindowAnimations(android.R.style.Animation_Dialog);
             } else {
                 mWindow.setWindowAnimations(mAnimStyleResId);
             }
             mHeaderPanel = contentView.findViewById(R.id.headPanel);
-            if (mTitle == null && mMessage == null && (editTextList == null || editTextList.isEmpty())) {
+            if (mTitle == null && mMessage == null && (mEditTextList == null || mEditTextList.isEmpty())) {
                 mHeaderPanel.setVisibility(View.GONE);
             }
             if (mProgressBar != null) {
@@ -77,11 +82,12 @@ public class CocoaDialog extends Dialog implements CocoaDialogInterface {
                 mProgressBar.setLayoutParams(params);
                 mHeaderPanel.addView(mProgressBar);
             }
-            if (editTextList != null) {
-                for (EditText editText : editTextList) {
+            if (mEditTextList != null) {
+                for (int i = 0; i < mEditTextList.size(); i++) {
+                    EditText editText = mEditTextList.get(i);
                     editText.setBackgroundResource(com.berwin.cocoadialog.R.drawable.cocoa_dialog_edit_text_background);
                     LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-                    params.topMargin = DensityUtil.dip2px(getContext(), 8);
+                    params.topMargin = DensityUtil.dip2px(getContext(), i == 0 ? 12 : 8);
                     editText.setLayoutParams(params);
                     int padding = DensityUtil.dip2px(getContext(), 4);
                     editText.setPadding(padding, padding, padding, padding);
@@ -126,7 +132,7 @@ public class CocoaDialog extends Dialog implements CocoaDialogInterface {
         WindowManager.LayoutParams l = mWindow.getAttributes();
         if (mPreferredStyle == CocoaDialogStyle.alert) {
             DisplayMetrics dm = getContext().getResources().getDisplayMetrics();
-            l.width = Math.min(dm.widthPixels, dm.heightPixels);
+            l.width = Math.round(Math.min(dm.widthPixels, dm.heightPixels) * 0.8f);
         } else {
             l.width = WindowManager.LayoutParams.MATCH_PARENT;
         }
@@ -135,152 +141,23 @@ public class CocoaDialog extends Dialog implements CocoaDialogInterface {
     }
 
     /**
-     * Set the preferred style for the cocoa dialog, default value is CocoaDialogStyle.alert.
-     *
-     * @param preferredStyle Preferred style for the cocoa dialog.
-     * @return {@link CocoaDialog} instance.
+     * Get the edit text list that added to the {@link CocoaDialog}.
+     * @return The list of the edit texts.
      */
-    public CocoaDialog setPreferredStyle(@NonNull CocoaDialogStyle preferredStyle) {
-        this.mPreferredStyle = preferredStyle;
-        return this;
-    }
-
-    /**
-     * Set the animation style(include enter animation and exit animation) for the cocoa dialog,
-     * only effective on a cocoa dialog with a style of CocoaDialogStyle.alert.
-     *
-     * @param animStyleResId Style resource id of the animation.
-     * @return {@link CocoaDialog} instance.
-     */
-    public CocoaDialog setAnimStyle(@StyleRes int animStyleResId) {
-        this.mAnimStyleResId = animStyleResId;
-        return this;
-    }
-
-
-    @Override
-    public void setTitle(CharSequence title) {
-        this.mTitle = title;
-    }
-
-    @Override
-    public void setTitle(@StringRes int titleResId) {
-        if (titleResId != 0)
-            this.mTitle = getContext().getString(titleResId);
-    }
-
-    /**
-     * Set title for the cocoa dialog.
-     *
-     * @param title The title for the cocoa dialog.
-     * @return {@link CocoaDialog} instance.
-     */
-    public CocoaDialog setTitleText(CharSequence title) {
-        setTitle(title);
-        return this;
-    }
-
-    /**
-     * Set title for the cocoa dialog.
-     *
-     * @param titleResId The title  resource id for the cocoa dialog, ignored when resource id is zero.
-     * @return {@link CocoaDialog} instance.
-     */
-    public CocoaDialog setTitleText(@StringRes int titleResId) {
-        if (titleResId != 0)
-            setTitle(titleResId);
-        return this;
-    }
-
-    /**
-     * Set message for the cocoa dialog.
-     *
-     * @param message The message for the cocoa dialog.
-     * @return {@link CocoaDialog} instance.
-     */
-    public CocoaDialog setMessage(CharSequence message) {
-        this.mMessage = message;
-        return this;
-    }
-
-    /**
-     * Set message for the cocoa dialog.
-     *
-     * @param messageResId The message resource id for the cocoa dialog, ignored when resource id is zero.
-     * @return {@link CocoaDialog} instance.
-     */
-    public CocoaDialog setMessage(@StringRes int messageResId) {
-        if (messageResId != 0)
-            this.mMessage = getContext().getString(messageResId);
-        return this;
-    }
-
-    /**
-     * Add action to cocoa dialog.
-     *
-     * @param action CocoaDialogAction, appears as a button of the cocoa dialog.
-     * @return Cocoa dialog instance.
-     */
-    public CocoaDialog addAction(@NonNull CocoaDialogAction action) {
-        if (mActionList == null) {
-            mActionList = new ArrayList<>();
+    @Nullable
+    public List<EditText> getEditTextList() {
+        if (mEditTextList != null) {
+            List<EditText> list = new ArrayList<>();
+            list.addAll(mEditTextList);
+            return list;
         }
-        if (action.getStyle() == CocoaDialogActionStyle.cancel) {
-            if (mActionList != null && mActionList.size() > 0 && mActionList.get(0).getStyle() == CocoaDialogActionStyle.cancel) {
-                throw new IllegalArgumentException("Cocoa dialog can only have one action with a style of CocoaDialogActionStyle.Cancel");
-            } else {
-                mActionList.add(0, action);
-            }
-        } else {
-            mActionList.add(action);
-        }
-        return this;
-    }
-
-    /**
-     * Add an edit text to the cocoa dialog, only effective on a cocoa dialog with a style of CocoaDialogStyle.alert.
-     *
-     * @param configurationHandler The handler to configure the edit text, such as text color, hint and default text.
-     * @return {@link CocoaDialog} instance.
-     */
-    public CocoaDialog addEditText(EditTextConfigurationHandler configurationHandler) {
-        CocoaDialogStyle style = this.mPreferredStyle;
-        if (style != CocoaDialogStyle.alert) {
-            throw new IllegalArgumentException("EditText can only be added to a cocoa dialog of style CocoaDialogStyle.alert");
-        }
-        EditText editText = new EditText(getContext());
-        mProgressBar = null;
-        if (editTextList == null) {
-            editTextList = new ArrayList<>();
-        }
-        editTextList.add(editText);
-        if (configurationHandler != null) {
-            configurationHandler.onEditTextAdded(editText);
-        }
-        return this;
-    }
-
-    /**
-     * Add a progress bar to the cocoa dialog, only effective on a cocoa dialog with a style of CocoaDialogStyle.alert.
-     *
-     * @param handler The handler to build and configure the progress bar.
-     * @return {@link CocoaDialog} instance.
-     */
-    public CocoaDialog addProgressBar(@NonNull ProgressBarBuildHandler handler) {
-        if (mPreferredStyle != CocoaDialogStyle.alert) {
-            throw new IllegalArgumentException("ProgressBar can only be added to a cocoa dialog of style CocoaDialogStyle.alert");
-        }
-        mProgressBar = handler.build(getContext());
-        if (editTextList != null && editTextList.size() > 0) {
-            editTextList.clear();
-        }
-        return this;
+        return null;
     }
 
     /**
      * Set the current progress to the progress bar.
      *
-     * @param progress The current progress value, ignored if {@link #addProgressBar(ProgressBarBuildHandler)} not called.
+     * @param progress The current progress value, ignored if {@link Builder#addProgressBar(ProgressBarBuildHandler)} not called.
      */
     public void setProgress(int progress) {
         if (mProgressBar != null) {
@@ -292,16 +169,12 @@ public class CocoaDialog extends Dialog implements CocoaDialogInterface {
     /**
      * Get the the current progress of the progress bar.
      *
-     * @return The current progress, return 0 if {@link #addProgressBar(ProgressBarBuildHandler)} not called.
+     * @return The current progress, return 0 if {@link Builder#addProgressBar(ProgressBarBuildHandler)} not called.
      */
     public int getProgress() {
         return mProgressBar != null ? mProgressBar.getProgress() : 0;
     }
 
-    private CocoaDialog setProgressBar(ProgressBar progressBar) {
-        this.mProgressBar = progressBar;
-        return this;
-    }
 
     private void resolveActions() {
         if (mPreferredStyle == CocoaDialogStyle.alert) {
@@ -312,7 +185,7 @@ public class CocoaDialog extends Dialog implements CocoaDialogInterface {
     }
 
     private void resolveAlertActions() {
-        boolean isHeaderHidden = mTitle == null && mMessage == null && (editTextList == null || editTextList.isEmpty());
+        boolean isHeaderHidden = mTitle == null && mMessage == null && (mEditTextList == null || mEditTextList.isEmpty());
         if (mActionList == null || mActionList.isEmpty()) {
             mPanelBorder.setVisibility(View.GONE);
         } else if (isHeaderHidden || mActionList.size() > 2) {
@@ -325,7 +198,7 @@ public class CocoaDialog extends Dialog implements CocoaDialogInterface {
             }
             for (int i = 0; i < mActionList.size(); i++) {
                 final CocoaDialogAction action = mActionList.get(i);
-                LinearLayout.LayoutParams buttonParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, DensityUtil.dip2px(getContext(), 50));
+                LinearLayout.LayoutParams buttonParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, DensityUtil.dip2px(getContext(), 45));
                 Button button = buildActionButton(action, buttonParams);
                 boolean needBorder = i < mActionList.size() - 1;
                 if (i == 0 && isHeaderHidden) {
@@ -351,7 +224,7 @@ public class CocoaDialog extends Dialog implements CocoaDialogInterface {
             mButtonPanel.setOrientation(LinearLayout.HORIZONTAL);
             for (int i = 0; i < mActionList.size(); i++) {
                 final CocoaDialogAction action = mActionList.get(i);
-                LinearLayout.LayoutParams buttonParams = new LinearLayout.LayoutParams(0, DensityUtil.dip2px(getContext(), 45));
+                LinearLayout.LayoutParams buttonParams = new LinearLayout.LayoutParams(0, DensityUtil.dip2px(getContext(), 40));
                 buttonParams.weight = 1;
                 Button button = buildActionButton(action, buttonParams);
                 if (mButtonPanel.getChildCount() > 0) {
@@ -442,46 +315,23 @@ public class CocoaDialog extends Dialog implements CocoaDialogInterface {
 
     public static class Builder {
 
-        Context mContext;
-        CharSequence mTitle;
-        CharSequence mMessage;
-        int mAnimStyleRes = 0;
-        ProgressBar mProgressBar;
-        List<EditText> mEditTextList;
-        CocoaDialogStyle mPreferredStyle;
-        List<CocoaDialogAction> mActionList;
+        final Context context;
+        final CocoaDialogStyle preferredStyle;
+
+        int animStyleRes = 0;
+        CharSequence title;
+        CharSequence message;
+        ProgressBar progressBar;
+        List<EditText> editTextList;
+        List<CocoaDialogAction> actionList;
 
         public Builder(@NonNull Context context) {
             this(context, CocoaDialogStyle.alert);
         }
 
         public Builder(@NonNull Context context, @NonNull CocoaDialogStyle preferredStyle) {
-            mContext = context;
-            mPreferredStyle = preferredStyle;
-        }
-
-        public Builder(@NonNull Context context, @StringRes int titleRes, @StringRes int messageRes, @NonNull CocoaDialogStyle preferredStyle) {
-            this(context, preferredStyle);
-            mTitle = titleRes != 0 ? context.getString(titleRes) : null;
-            mMessage = messageRes != 0 ? context.getString(messageRes) : null;
-        }
-
-
-        public Builder(@NonNull Context context, CharSequence title, CharSequence message, @NonNull CocoaDialogStyle preferredStyle) {
-            this(context, preferredStyle);
-            mTitle = title;
-            mMessage = message;
-        }
-
-        /**
-         * Set the preferred style for the cocoa dialog, default value is CocoaDialogStyle.alert.
-         *
-         * @param preferredStyle Preferred style for the cocoa dialog.
-         * @return {@link CocoaDialog.Builder} instance.
-         */
-        public Builder setPreferredStyle(@NonNull CocoaDialogStyle preferredStyle) {
-            this.mPreferredStyle = preferredStyle;
-            return this;
+            this.context = context;
+            this.preferredStyle = preferredStyle;
         }
 
         /**
@@ -492,7 +342,7 @@ public class CocoaDialog extends Dialog implements CocoaDialogInterface {
          * @return {@link CocoaDialog.Builder} instance.
          */
         public Builder setAnimStyle(@StyleRes int animStyleResId) {
-            mAnimStyleRes = animStyleResId;
+            animStyleRes = animStyleResId;
             return this;
         }
 
@@ -503,7 +353,7 @@ public class CocoaDialog extends Dialog implements CocoaDialogInterface {
          * @return {@link CocoaDialog.Builder} instance.
          */
         public Builder setTitle(CharSequence title) {
-            mTitle = title;
+            this.title = title;
             return this;
         }
 
@@ -515,7 +365,7 @@ public class CocoaDialog extends Dialog implements CocoaDialogInterface {
          */
         public Builder setTitle(@StringRes int titleResId) {
             if (titleResId != 0)
-                this.mTitle = mContext.getString(titleResId);
+                this.title = context.getString(titleResId);
             return this;
         }
 
@@ -526,7 +376,7 @@ public class CocoaDialog extends Dialog implements CocoaDialogInterface {
          * @return {@link CocoaDialog.Builder} instance.
          */
         public Builder setMessage(CharSequence message) {
-            mMessage = message;
+            this.message = message;
             return this;
         }
 
@@ -539,28 +389,28 @@ public class CocoaDialog extends Dialog implements CocoaDialogInterface {
          */
         public Builder setMessage(@StringRes int messageResId) {
             if (messageResId != 0)
-                this.mMessage = mContext.getString(messageResId);
+                this.message = context.getString(messageResId);
             return this;
         }
 
         /**
-         * Add action to cocoa dialog.
+         * Add action to cocoa dialog, the {@link CocoaDialogAction} will appears as a button of the cocoa dialog.
          *
-         * @param action CocoaDialogAction, appears as a button of the cocoa dialog.
+         * @param action {@link CocoaDialogAction} instance.
          * @return {@link CocoaDialog.Builder} instance.
          */
         public Builder addAction(@NonNull CocoaDialogAction action) {
-            if (mActionList == null) {
-                mActionList = new ArrayList<>();
+            if (actionList == null) {
+                actionList = new ArrayList<>();
             }
             if (action.getStyle() == CocoaDialogActionStyle.cancel) {
-                if (mActionList != null && mActionList.size() > 0 && mActionList.get(0).getStyle() == CocoaDialogActionStyle.cancel) {
+                if (actionList != null && actionList.size() > 0 && actionList.get(0).getStyle() == CocoaDialogActionStyle.cancel) {
                     throw new IllegalArgumentException("Cocoa dialog can only have one action with a style of CocoaDialogActionStyle.Cancel");
                 } else {
-                    mActionList.add(0, action);
+                    actionList.add(0, action);
                 }
             } else {
-                mActionList.add(action);
+                actionList.add(action);
             }
             return this;
 
@@ -573,17 +423,16 @@ public class CocoaDialog extends Dialog implements CocoaDialogInterface {
          * @return {@link CocoaDialog.Builder} instance.
          */
         public Builder addEditText(EditTextConfigurationHandler configurationHandler) {
-            Context context = mContext;
-            CocoaDialogStyle style = mPreferredStyle;
-            if (style != CocoaDialogStyle.alert) {
+            Context context = this.context;
+            if (preferredStyle != CocoaDialogStyle.alert) {
                 throw new IllegalArgumentException("EditText can only be added to a cocoa dialog of style CocoaDialogStyle.alert");
             }
             EditText editText = new EditText(context);
-            mProgressBar = null;
-            if (mEditTextList == null) {
-                mEditTextList = new ArrayList<>();
+            progressBar = null;
+            if (editTextList == null) {
+                editTextList = new ArrayList<>();
             }
-            mEditTextList.add(editText);
+            editTextList.add(editText);
             if (configurationHandler != null) {
                 configurationHandler.onEditTextAdded(editText);
             }
@@ -597,32 +446,25 @@ public class CocoaDialog extends Dialog implements CocoaDialogInterface {
          * @return {@link CocoaDialog.Builder} instance.
          */
         public CocoaDialog.Builder addProgressBar(@NonNull ProgressBarBuildHandler handler) {
-            Context context = mContext;
-            CocoaDialogStyle style = mPreferredStyle;
+            Context context = this.context;
+            CocoaDialogStyle style = preferredStyle;
             if (style != CocoaDialogStyle.alert) {
                 throw new IllegalArgumentException("ProgressBar can only be added to a cocoa dialog of style CocoaDialogStyle.alert");
             }
-            mProgressBar = handler.build(context);
-            if (mEditTextList != null && mEditTextList.size() > 0) {
-                mEditTextList.clear();
+            progressBar = handler.build(context);
+            if (editTextList != null && editTextList.size() > 0) {
+                editTextList.clear();
             }
             return this;
         }
 
         /**
-         * Create a cocoa dialog.
+         * Build a cocoa dialog.
          *
          * @return {@link CocoaDialog} instance.
          */
-        public CocoaDialog create() {
-            CocoaDialog dialog = new CocoaDialog(mContext, android.R.style.Theme_Dialog, mPreferredStyle)
-                    .setAnimStyle(mAnimStyleRes)
-                    .setTitleText(mTitle)
-                    .setMessage(mMessage)
-                    .setProgressBar(mProgressBar);
-            dialog.editTextList = mEditTextList;
-            dialog.mActionList = mActionList;
-            return dialog;
+        public CocoaDialog build() {
+            return new CocoaDialog(this);
         }
     }
 

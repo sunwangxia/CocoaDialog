@@ -37,8 +37,8 @@ public class CocoaDialogAction {
         return listener;
     }
 
-    public interface OnClickListener<T extends CocoaDialogInterface> {
-        void onClick(T dialog);
+    public interface OnClickListener {
+        void onClick(CocoaDialog dialog);
     }
 }
 
