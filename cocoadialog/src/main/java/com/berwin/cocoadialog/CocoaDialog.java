@@ -18,6 +18,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -43,6 +44,10 @@ public class CocoaDialog extends Dialog {
     private final CocoaDialogStyle mPreferredStyle;
     private final List<CocoaDialogAction> mActionList;
 
+    private int mCustomWidth;
+    private int mCustomHeight;
+    private View mCustomContentView;
+
     private CocoaDialog(Builder builder) {
         super(builder.context, android.R.style.Theme_Dialog);
         this.mTitle = builder.title;
@@ -52,6 +57,9 @@ public class CocoaDialog extends Dialog {
         this.mEditTextList = builder.editTextList;
         this.mAnimStyleResId = builder.animStyleRes;
         this.mPreferredStyle = builder.preferredStyle;
+        this.mCustomHeight = builder.customHeight;
+        this.mCustomWidth = builder.customWidth;
+        this.mCustomContentView = builder.customContentView;
     }
 
     @Override
@@ -62,65 +70,84 @@ public class CocoaDialog extends Dialog {
         mWindow.requestFeature(Window.FEATURE_NO_TITLE);
         mWindow.setBackgroundDrawableResource(android.R.color.transparent);
         View contentView;
-        if (mPreferredStyle == CocoaDialogStyle.alert) {
-            contentView = LayoutInflater.from(getContext()).inflate(com.berwin.cocoadialog.R.layout.cocoa_dialog_alert, null, false);
-            if (mAnimStyleResId == 0) {
-                mWindow.setWindowAnimations(android.R.style.Animation_Dialog);
+        switch (mPreferredStyle) {
+            case alert:
+                contentView = LayoutInflater.from(getContext()).inflate(com.berwin.cocoadialog.R.layout.cocoa_dialog_alert, null, false);
+                if (mAnimStyleResId == 0) {
+                    mWindow.setWindowAnimations(android.R.style.Animation_Dialog);
+                } else {
+                    mWindow.setWindowAnimations(mAnimStyleResId);
+                }
+                mHeaderPanel = contentView.findViewById(R.id.headPanel);
+                if (mTitle == null && mMessage == null && (mEditTextList == null || mEditTextList.isEmpty())) {
+                    mHeaderPanel.setVisibility(View.GONE);
+                }
+                if (mProgressBar != null) {
+                    LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+                    if (mTitle != null && mMessage != null) {
+                        params.topMargin = DensityUtil.dip2px(getContext(), 10);
+                    }
+                    params.gravity = Gravity.CENTER_HORIZONTAL;
+                    mProgressBar.setLayoutParams(params);
+                    mHeaderPanel.addView(mProgressBar);
+                }
+                if (mEditTextList != null) {
+                    for (int i = 0; i < mEditTextList.size(); i++) {
+                        EditText editText = mEditTextList.get(i);
+                        editText.setBackgroundResource(com.berwin.cocoadialog.R.drawable.cocoa_dialog_edit_text_background);
+                        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                        params.topMargin = DensityUtil.dip2px(getContext(), i == 0 ? 12 : 8);
+                        editText.setLayoutParams(params);
+                        int padding = DensityUtil.dip2px(getContext(), 4);
+                        editText.setPadding(padding, padding, padding, padding);
+                        editText.setLines(1);
+                        mHeaderPanel.addView(editText);
+                    }
+                }
+                break;
+            case actionSheet:
+                contentView = LayoutInflater.from(getContext()).inflate(com.berwin.cocoadialog.R.layout.cocoa_dialog_action_sheet, null, false);
+                mWindow.setWindowAnimations(com.berwin.cocoadialog.R.style.Animation_CocoaDialog_ActionSheet);
+                mWindow.setGravity(Gravity.BOTTOM);
+                mHeaderPanel = contentView.findViewById(R.id.headPanel);
+                if (mTitle == null && mMessage == null) {
+                    mHeaderPanel.setVisibility(View.GONE);
+                }
+                break;
+            case custom:
+                if (mCustomContentView == null) {
+                    throw new IllegalArgumentException("Custom content view can not be null, call CocoaDailog.Builder.setCustomContentView(View) first.");
+                }
+                if (mCustomWidth == 0 || mCustomWidth < -2) {
+                    mCustomWidth = WindowManager.LayoutParams.WRAP_CONTENT;
+                }
+                if (mCustomHeight == 0 || mCustomHeight < -2) {
+                    mCustomHeight = WindowManager.LayoutParams.WRAP_CONTENT;
+                }
+                contentView = mCustomContentView;
+                break;
+            default:
+                contentView = new FrameLayout(getContext());
+                break;
+        }
+        if (mPreferredStyle != CocoaDialogStyle.custom) {
+            TextView titleText = contentView.findViewById(R.id.title);
+            TextView messageText = contentView.findViewById(R.id.message);
+            if (mTitle != null) {
+                titleText.setText(mTitle);
             } else {
-                mWindow.setWindowAnimations(mAnimStyleResId);
+                titleText.setVisibility(View.GONE);
             }
-            mHeaderPanel = contentView.findViewById(R.id.headPanel);
-            if (mTitle == null && mMessage == null && (mEditTextList == null || mEditTextList.isEmpty())) {
-                mHeaderPanel.setVisibility(View.GONE);
+            if (mMessage != null) {
+                messageText.setText(mMessage);
+            } else {
+                messageText.setVisibility(View.GONE);
             }
-            if (mProgressBar != null) {
-                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-                if (mTitle != null && mMessage != null) {
-                    params.topMargin = DensityUtil.dip2px(getContext(), 10);
-                }
-                params.gravity = Gravity.CENTER_HORIZONTAL;
-                mProgressBar.setLayoutParams(params);
-                mHeaderPanel.addView(mProgressBar);
-            }
-            if (mEditTextList != null) {
-                for (int i = 0; i < mEditTextList.size(); i++) {
-                    EditText editText = mEditTextList.get(i);
-                    editText.setBackgroundResource(com.berwin.cocoadialog.R.drawable.cocoa_dialog_edit_text_background);
-                    LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-                    params.topMargin = DensityUtil.dip2px(getContext(), i == 0 ? 12 : 8);
-                    editText.setLayoutParams(params);
-                    int padding = DensityUtil.dip2px(getContext(), 4);
-                    editText.setPadding(padding, padding, padding, padding);
-                    editText.setLines(1);
-                    mHeaderPanel.addView(editText);
-                }
-            }
-        } else {
-            contentView = LayoutInflater.from(getContext()).inflate(com.berwin.cocoadialog.R.layout.cocoa_dialog_action_sheet, null, false);
-            mWindow.setWindowAnimations(com.berwin.cocoadialog.R.style.Animation_CocoaDialog_ActionSheet);
-            mWindow.setGravity(Gravity.BOTTOM);
-            mHeaderPanel = contentView.findViewById(R.id.headPanel);
-            if (mTitle == null && mMessage == null) {
-                mHeaderPanel.setVisibility(View.GONE);
-            }
-
+            mContentPanel = contentView.findViewById(R.id.contentPanel);
+            mPanelBorder = contentView.findViewById(R.id.panelBorder);
+            mButtonPanel = contentView.findViewById(R.id.buttonPanel);
+            resolveActions();
         }
-        TextView titleText = contentView.findViewById(R.id.title);
-        TextView messageText = contentView.findViewById(R.id.message);
-        if (mTitle != null) {
-            titleText.setText(mTitle);
-        } else {
-            titleText.setVisibility(View.GONE);
-        }
-        if (mMessage != null) {
-            messageText.setText(mMessage);
-        } else {
-            messageText.setVisibility(View.GONE);
-        }
-        mContentPanel = contentView.findViewById(R.id.contentPanel);
-        mPanelBorder = contentView.findViewById(R.id.panelBorder);
-        mButtonPanel = contentView.findViewById(R.id.buttonPanel);
-        resolveActions();
         setContentView(contentView);
     }
 
@@ -130,18 +157,27 @@ public class CocoaDialog extends Dialog {
         Window mWindow = getWindow();
         assert mWindow != null;
         WindowManager.LayoutParams l = mWindow.getAttributes();
-        if (mPreferredStyle == CocoaDialogStyle.alert) {
-            DisplayMetrics dm = getContext().getResources().getDisplayMetrics();
-            l.width = Math.round(Math.min(dm.widthPixels, dm.heightPixels) * 0.8f);
-        } else {
-            l.width = WindowManager.LayoutParams.MATCH_PARENT;
+        switch (mPreferredStyle) {
+            case actionSheet:
+                l.width = WindowManager.LayoutParams.MATCH_PARENT;
+                l.height = WindowManager.LayoutParams.WRAP_CONTENT;
+                break;
+            case alert:
+                DisplayMetrics dm = getContext().getResources().getDisplayMetrics();
+                l.width = Math.round(Math.min(dm.widthPixels, dm.heightPixels) * 0.8f);
+                l.height = WindowManager.LayoutParams.WRAP_CONTENT;
+                break;
+            case custom:
+                l.width = this.mCustomWidth;
+                l.height = this.mCustomHeight;
+                break;
         }
-        l.height = WindowManager.LayoutParams.WRAP_CONTENT;
         mWindow.setAttributes(l);
     }
 
     /**
      * Get the edit text list that added to the {@link CocoaDialog}.
+     *
      * @return The list of the edit texts.
      */
     @Nullable
@@ -224,7 +260,7 @@ public class CocoaDialog extends Dialog {
             mButtonPanel.setOrientation(LinearLayout.HORIZONTAL);
             for (int i = 0; i < mActionList.size(); i++) {
                 final CocoaDialogAction action = mActionList.get(i);
-                LinearLayout.LayoutParams buttonParams = new LinearLayout.LayoutParams(0, DensityUtil.dip2px(getContext(), 40));
+                LinearLayout.LayoutParams buttonParams = new LinearLayout.LayoutParams(0, DensityUtil.dip2px(getContext(), 43));
                 buttonParams.weight = 1;
                 Button button = buildActionButton(action, buttonParams);
                 if (mButtonPanel.getChildCount() > 0) {
@@ -318,12 +354,17 @@ public class CocoaDialog extends Dialog {
         final Context context;
         final CocoaDialogStyle preferredStyle;
 
+        int customWidth = 0;
+        int customHeight = 0;
+        View customContentView;
+
         int animStyleRes = 0;
         CharSequence title;
         CharSequence message;
         ProgressBar progressBar;
         List<EditText> editTextList;
         List<CocoaDialogAction> actionList;
+
 
         public Builder(@NonNull Context context) {
             this(context, CocoaDialogStyle.alert);
@@ -335,8 +376,37 @@ public class CocoaDialog extends Dialog {
         }
 
         /**
-         * Set the animation style(include enter animation and exit animation) for the cocoa dialog,
-         * only effective on a cocoa dialog with a style of CocoaDialogStyle.alert.
+         * Set the custom width for the {@link CocoaDialog}, only effective on the style of {@link CocoaDialogStyle#custom}.
+         * @param customWidth The custom width of pixels, can use {@link WindowManager.LayoutParams#MATCH_PARENT} or {@link WindowManager.LayoutParams#WRAP_CONTENT} also.
+         * @return {@link Builder} instance.
+         */
+        public Builder setCustomWidth(int customWidth) {
+            this.customWidth = customWidth;
+            return this;
+        }
+
+        /**
+         * Set the custom height for the {@link CocoaDialog}, only effective on the style of {@link CocoaDialogStyle#custom}.
+         * @param customHeight The custom height of pixels, can use {@link WindowManager.LayoutParams#MATCH_PARENT} or {@link WindowManager.LayoutParams#WRAP_CONTENT} also.
+         * @return {@link Builder} instance.
+         */
+        public Builder setCustomHeight(int customHeight) {
+            this.customHeight = customHeight;
+            return this;
+        }
+
+        /**
+         * Set the custom view for the {@link CocoaDialog}, only effective on the style of {@link CocoaDialogStyle#custom}.
+         * @param contentView The custom content view.
+         * @return {@link Builder} instance.
+         */
+        public Builder setCustomContentView(View contentView) {
+            this.customContentView = contentView;
+            return this;
+        }
+
+        /**
+         * Set the animation style(include enter animation and exit animation) for the {@link CocoaDialog}, only effective on the style of {@link CocoaDialogStyle#alert}.
          *
          * @param animStyleResId Style resource id of the animation.
          * @return {@link CocoaDialog.Builder} instance.
@@ -347,7 +417,7 @@ public class CocoaDialog extends Dialog {
         }
 
         /**
-         * Set title for the cocoa dialog.
+         * Set title for the {@link CocoaDialog}, would be ignored on the style of {@link CocoaDialogStyle#custom}.
          *
          * @param title The title for the cocoa dialog.
          * @return {@link CocoaDialog.Builder} instance.
@@ -358,21 +428,22 @@ public class CocoaDialog extends Dialog {
         }
 
         /**
-         * Set title for the cocoa dialog.
+         * Set title for the {@link CocoaDialog}, would be ignored on the style of {@link CocoaDialogStyle#custom}.
          *
-         * @param titleResId The title resource id for the cocoa dialog, ignored when resource id is zero.
+         * @param titleResId The title resource id for the {@link CocoaDialog}, ignored when resource id is zero.
          * @return {@link CocoaDialog.Builder} instance.
          */
         public Builder setTitle(@StringRes int titleResId) {
-            if (titleResId != 0)
+            if (titleResId != 0) {
                 this.title = context.getString(titleResId);
+            }
             return this;
         }
 
         /**
-         * Set message for the cocoa dialog.
+         * Set message for the {@link CocoaDialog}, would be ignored on the style of {@link CocoaDialogStyle#custom}.
          *
-         * @param message The message for the cocoa dialog.
+         * @param message The message for the {@link CocoaDialog}.
          * @return {@link CocoaDialog.Builder} instance.
          */
         public Builder setMessage(CharSequence message) {
@@ -382,19 +453,20 @@ public class CocoaDialog extends Dialog {
 
 
         /**
-         * Set message for the cocoa dialog.
+         * Set message for the {@link CocoaDialog}, would be ignored on the style of {@link CocoaDialogStyle#custom}.
          *
-         * @param messageResId The message resource id for the cocoa dialog, ignored when resource id is zero.
+         * @param messageResId The message resource id for the {@link CocoaDialog}, ignored when resource id is zero.
          * @return {@link CocoaDialog.Builder} instance.
          */
         public Builder setMessage(@StringRes int messageResId) {
-            if (messageResId != 0)
+            if (messageResId != 0) {
                 this.message = context.getString(messageResId);
+            }
             return this;
         }
 
         /**
-         * Add action to cocoa dialog, the {@link CocoaDialogAction} will appears as a button of the cocoa dialog.
+         * Add action to {@link CocoaDialog}, the {@link CocoaDialogAction} will appears as a button of the cocoa dialog, would be ignored on the style of {@link CocoaDialogStyle#custom}.
          *
          * @param action {@link CocoaDialogAction} instance.
          * @return {@link CocoaDialog.Builder} instance.
@@ -417,7 +489,7 @@ public class CocoaDialog extends Dialog {
         }
 
         /**
-         * Add an edit text to the cocoa dialog, only effective on a cocoa dialog with a style of CocoaDialogStyle.alert.
+         * Add an edit text to the {@link CocoaDialog}, only effective on the style of {@link CocoaDialogStyle#alert}.
          *
          * @param configurationHandler The handler to configure the edit text, such as text color, hint and default text.
          * @return {@link CocoaDialog.Builder} instance.
@@ -440,7 +512,7 @@ public class CocoaDialog extends Dialog {
         }
 
         /**
-         * Add a progress bar to the cocoa dialog, only effective on a cocoa dialog with a style of CocoaDialogStyle.alert.
+         * Add a progress bar to the {@link CocoaDialog}, only effective on a cocoa dialog with a style of {@link CocoaDialogStyle#alert}.
          *
          * @param handler The handler to build and configure the progress bar.
          * @return {@link CocoaDialog.Builder} instance.
@@ -459,7 +531,7 @@ public class CocoaDialog extends Dialog {
         }
 
         /**
-         * Build a cocoa dialog.
+         * Build a {@link CocoaDialog}.
          *
          * @return {@link CocoaDialog} instance.
          */

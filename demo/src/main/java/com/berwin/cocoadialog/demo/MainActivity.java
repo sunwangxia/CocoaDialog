@@ -6,7 +6,9 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.text.InputType;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Toast;
@@ -37,6 +39,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         findViewById(R.id.btn_alert_progress_horizontal).setOnClickListener(this);
         findViewById(R.id.btn_action_sheet_ok_cancel).setOnClickListener(this);
         findViewById(R.id.btn_action_sheet_other).setOnClickListener(this);
+        findViewById(R.id.btn_custom).setOnClickListener(this);
     }
 
     @Override
@@ -187,6 +190,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         .setMessage(R.string.dialog_message)
                         .addAction(new CocoaDialogAction("Destructive Choice", CocoaDialogActionStyle.destructive, null))
                         .addAction(new CocoaDialogAction("Safe Choice", CocoaDialogActionStyle.normal, null))
+                        .build().show();
+                break;
+            case R.id.btn_custom:
+                // CocoaDialogStyle.custom样式为自定义对话框，当Style设置为custom时只有setCustomWidth、setCustomHeight
+                // 和setContentView方法会生效，其他方法均会被忽略。
+                // 自定义的ContentView中有任何需要交互的控件均需要调用者在外部进行监听处理。
+                // customWidth、customHeight 可设置像素值用WindowManager.LayoutParams.MATCH_PARENT和
+                // WindowManager.LayoutParams.WRAP_CONTENT，若设置为0或除-1和-2之外的其他负数则默认使用WindowManager.LayoutParams.WRAP_CONTENT
+                new CocoaDialog.Builder(this, CocoaDialogStyle.custom)
+                        .setCustomWidth(WindowManager.LayoutParams.WRAP_CONTENT)
+                        .setCustomHeight(WindowManager.LayoutParams.WRAP_CONTENT)
+                        .setCustomContentView(LayoutInflater.from(this).inflate(R.layout.loading_dialog, null))
                         .build().show();
                 break;
         }

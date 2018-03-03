@@ -22,7 +22,7 @@ allprojects {
 
 ```
 dependencies {
-   compile 'com.github.SunBerwin:CocoaDialog:v1.2.2'
+   compile 'com.github.SunBerwin:CocoaDialog:v1.3.0'
 }
 ```
 
@@ -78,6 +78,27 @@ dependencies {
     	.build().show();
 ```
 
+
+## 自定义ContentView
+
+**Release v1.3.0** 增加了自定义ContentView的支持，使用时只需在构建时传入**CocoaDialogStyle.custom**样式，之后调用setCustomContentView(View)，并通过setCustomWidth(int)和setCustomHeight(int)来设置需要的宽高即可。
+
+使用custom样式时必须调用setCustomContentView(View)，否则会抛出异常。
+
+setCustomWidth(int)和setCustomHeight(int)参数为像素值，同时也支持WindowManager.LayoutParams.MATCH\_PARENT 和 WindowManager.LayoutParams.WRAP\_CONTENT，设置为0或其他非法数值默认使用WindowManager.LayoutParams.WRAP\_CONTENT。
+
+
+> 注意：使用自定义ContentView时会使用其他方法(如setTitle、setMessage、addAction等)失效，如果ContentView中有需要与用户交互的控件需要在外面进行监听处理。
+
+示例代码如下：
+
+```
+    new CocoaDialog.Builder(this, CocoaDialogStyle.custom)
+                        .setCustomWidth(WindowManager.LayoutParams.WRAP_CONTENT)
+                        .setCustomHeight(WindowManager.LayoutParams.WRAP_CONTENT)
+                        .setCustomContentView(LayoutInflater.from(this).inflate(R.layout.loading_dialog, null))
+                        .build().show();
+```
 
 ## 对话框按钮
 
