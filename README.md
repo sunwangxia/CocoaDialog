@@ -22,7 +22,7 @@ allprojects {
 
 ```
 dependencies {
-   compile 'com.github.SunBerwin:CocoaDialog:v1.3.0'
+   compile 'com.github.SunBerwin:CocoaDialog:v1.3.1'
 }
 ```
 
@@ -81,7 +81,7 @@ dependencies {
 
 ## 自定义ContentView
 
-**Release v1.3.0** 增加了自定义ContentView的支持，使用时只需在构建时传入**CocoaDialogStyle.custom**样式，之后调用setCustomContentView(View)，并通过setCustomWidth(int)和setCustomHeight(int)来设置需要的宽高即可。
+**1.3.0版本** 增加了自定义ContentView的支持，使用时只需在构建时传入**CocoaDialogStyle.custom**样式，之后调用setCustomContentView(View)，并通过setCustomWidth(int)和setCustomHeight(int)来设置需要的宽高即可。
 
 使用custom样式时必须调用setCustomContentView(View)，否则会抛出异常。
 

@@ -1,6 +1,7 @@
 package com.berwin.cocoadialog.demo;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Handler;
@@ -12,6 +13,7 @@ import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Toast;
+
 import com.berwin.cocoadialog.CocoaDialog;
 import com.berwin.cocoadialog.CocoaDialogAction;
 import com.berwin.cocoadialog.CocoaDialogActionStyle;
@@ -141,9 +143,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             public void onClick(CocoaDialog dialog) {
                                 handler.removeCallbacks(loading);
                             }
-                        })).build();
-                dialog.setCancelable(false);
-
+                        })).setOnCancelListener(new DialogInterface.OnCancelListener() {
+                            @Override
+                            public void onCancel(DialogInterface dialog) {
+                                handler.removeCallbacks(loading);
+                            }
+                        }).build();
                 // 模拟网络下载
                 loading = new TestProgressRunner(dialog) {
 
@@ -208,7 +213,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     abstract class TestProgressRunner implements Runnable {
+
         private CocoaDialog mDialog;
+
         TestProgressRunner(CocoaDialog dialog) {
             this.mDialog = dialog;
         }

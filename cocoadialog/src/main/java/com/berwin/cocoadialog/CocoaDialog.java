@@ -2,6 +2,7 @@ package com.berwin.cocoadialog;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -11,6 +12,7 @@ import android.support.annotation.StyleRes;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
 import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -60,6 +62,14 @@ public class CocoaDialog extends Dialog {
         this.mCustomHeight = builder.customHeight;
         this.mCustomWidth = builder.customWidth;
         this.mCustomContentView = builder.customContentView;
+        if (builder.cancelable != null) {
+            setCancelable(builder.cancelable);
+        }
+        if (builder.canceledOnTouchOutside != null) {
+            setCanceledOnTouchOutside(builder.canceledOnTouchOutside);
+        }
+        setOnCancelListener(builder.onCancelListener);
+        setOnDismissListener(builder.onDismissListener);
     }
 
     @Override
@@ -176,7 +186,7 @@ public class CocoaDialog extends Dialog {
     }
 
     /**
-     * Get the edit text list that added to the {@link CocoaDialog}.
+     * Get the edit text list that added to this {@link CocoaDialog}.
      *
      * @return The list of the edit texts.
      */
@@ -354,6 +364,11 @@ public class CocoaDialog extends Dialog {
         final Context context;
         final CocoaDialogStyle preferredStyle;
 
+        Boolean cancelable;
+        Boolean canceledOnTouchOutside;
+        OnCancelListener onCancelListener;
+        OnDismissListener onDismissListener;
+
         int customWidth = 0;
         int customHeight = 0;
         View customContentView;
@@ -376,7 +391,61 @@ public class CocoaDialog extends Dialog {
         }
 
         /**
-         * Set the custom width for the {@link CocoaDialog}, only effective on the style of {@link CocoaDialogStyle#custom}.
+         * Sets whether this {@link CocoaDialog} is cancelable with the
+         * {@link KeyEvent#KEYCODE_BACK BACK} key.
+         *
+         * @return {@link Builder} instance.
+         */
+        public Builder setCancelable(boolean cancelable) {
+            this.cancelable = cancelable;
+            return this;
+        }
+
+        /**
+         * Sets whether this dialog is canceled when touched outside the window's
+         * bounds. If setting to true, the dialog is set to be cancelable if not
+         * already set.
+         *
+         * @param cancel Whether the dialog should be canceled when touched outside
+         *            the window.
+         * @return {@link Builder} instance.
+         */
+        public Builder setCanceledOnTouchOutside(boolean cancel) {
+            this.canceledOnTouchOutside = cancel;
+            return this;
+        }
+
+        /**
+         * Set a listener to be invoked when the {@link CocoaDialog} is canceled.
+         * <p>
+         * <p>This will only be invoked when the dialog is canceled.
+         * Cancel events alone will not capture all ways that
+         * the dialog might be dismissed. If the creator needs
+         * to know when a dialog is dismissed in general, use
+         * {@link #setOnDismissListener}.</p>
+         *
+         * @param listener The {@link DialogInterface.OnCancelListener} to use.
+         * @return {@link Builder} instance.
+         */
+        public Builder setOnCancelListener(OnCancelListener listener) {
+            this.onCancelListener = listener;
+            return this;
+        }
+
+        /**
+         * Set a listener to be invoked when the dialog is dismissed.
+         *
+         * @param listener The {@link DialogInterface.OnDismissListener} to use.
+         * @return {@link Builder} instance.
+         */
+        public Builder setOnDismissListener(OnDismissListener listener) {
+            this.onDismissListener = listener;
+            return this;
+        }
+
+        /**
+         * Set the custom width for this {@link CocoaDialog}, only effective on the style of {@link CocoaDialogStyle#custom}.
+         *
          * @param customWidth The custom width of pixels, can use {@link WindowManager.LayoutParams#MATCH_PARENT} or {@link WindowManager.LayoutParams#WRAP_CONTENT} also.
          * @return {@link Builder} instance.
          */
@@ -386,7 +455,8 @@ public class CocoaDialog extends Dialog {
         }
 
         /**
-         * Set the custom height for the {@link CocoaDialog}, only effective on the style of {@link CocoaDialogStyle#custom}.
+         * Set the custom height for this {@link CocoaDialog}, only effective on the style of {@link CocoaDialogStyle#custom}.
+         *
          * @param customHeight The custom height of pixels, can use {@link WindowManager.LayoutParams#MATCH_PARENT} or {@link WindowManager.LayoutParams#WRAP_CONTENT} also.
          * @return {@link Builder} instance.
          */
@@ -396,7 +466,8 @@ public class CocoaDialog extends Dialog {
         }
 
         /**
-         * Set the custom view for the {@link CocoaDialog}, only effective on the style of {@link CocoaDialogStyle#custom}.
+         * Set the custom view for this {@link CocoaDialog}, only effective on the style of {@link CocoaDialogStyle#custom}.
+         *
          * @param contentView The custom content view.
          * @return {@link Builder} instance.
          */
@@ -406,7 +477,7 @@ public class CocoaDialog extends Dialog {
         }
 
         /**
-         * Set the animation style(include enter animation and exit animation) for the {@link CocoaDialog}, only effective on the style of {@link CocoaDialogStyle#alert}.
+         * Set the animation style(include enter animation and exit animation) for this {@link CocoaDialog}, only effective on the style of {@link CocoaDialogStyle#alert}.
          *
          * @param animStyleResId Style resource id of the animation.
          * @return {@link CocoaDialog.Builder} instance.
@@ -417,7 +488,7 @@ public class CocoaDialog extends Dialog {
         }
 
         /**
-         * Set title for the {@link CocoaDialog}, would be ignored on the style of {@link CocoaDialogStyle#custom}.
+         * Set title for this {@link CocoaDialog}, would be ignored on the style of {@link CocoaDialogStyle#custom}.
          *
          * @param title The title for the cocoa dialog.
          * @return {@link CocoaDialog.Builder} instance.
@@ -428,9 +499,9 @@ public class CocoaDialog extends Dialog {
         }
 
         /**
-         * Set title for the {@link CocoaDialog}, would be ignored on the style of {@link CocoaDialogStyle#custom}.
+         * Set title for this {@link CocoaDialog}, would be ignored on the style of {@link CocoaDialogStyle#custom}.
          *
-         * @param titleResId The title resource id for the {@link CocoaDialog}, ignored when resource id is zero.
+         * @param titleResId The title resource id for this {@link CocoaDialog}, ignored when resource id is zero.
          * @return {@link CocoaDialog.Builder} instance.
          */
         public Builder setTitle(@StringRes int titleResId) {
@@ -441,9 +512,9 @@ public class CocoaDialog extends Dialog {
         }
 
         /**
-         * Set message for the {@link CocoaDialog}, would be ignored on the style of {@link CocoaDialogStyle#custom}.
+         * Set message for this {@link CocoaDialog}, would be ignored on the style of {@link CocoaDialogStyle#custom}.
          *
-         * @param message The message for the {@link CocoaDialog}.
+         * @param message The message for this {@link CocoaDialog}.
          * @return {@link CocoaDialog.Builder} instance.
          */
         public Builder setMessage(CharSequence message) {
@@ -453,9 +524,9 @@ public class CocoaDialog extends Dialog {
 
 
         /**
-         * Set message for the {@link CocoaDialog}, would be ignored on the style of {@link CocoaDialogStyle#custom}.
+         * Set message for this {@link CocoaDialog}, would be ignored on the style of {@link CocoaDialogStyle#custom}.
          *
-         * @param messageResId The message resource id for the {@link CocoaDialog}, ignored when resource id is zero.
+         * @param messageResId The message resource id for this {@link CocoaDialog}, ignored when resource id is zero.
          * @return {@link CocoaDialog.Builder} instance.
          */
         public Builder setMessage(@StringRes int messageResId) {
@@ -489,7 +560,7 @@ public class CocoaDialog extends Dialog {
         }
 
         /**
-         * Add an edit text to the {@link CocoaDialog}, only effective on the style of {@link CocoaDialogStyle#alert}.
+         * Add an edit text to this {@link CocoaDialog}, only effective on the style of {@link CocoaDialogStyle#alert}.
          *
          * @param configurationHandler The handler to configure the edit text, such as text color, hint and default text.
          * @return {@link CocoaDialog.Builder} instance.
@@ -512,7 +583,7 @@ public class CocoaDialog extends Dialog {
         }
 
         /**
-         * Add a progress bar to the {@link CocoaDialog}, only effective on a cocoa dialog with a style of {@link CocoaDialogStyle#alert}.
+         * Add a progress bar to this {@link CocoaDialog}, only effective on a cocoa dialog with a style of {@link CocoaDialogStyle#alert}.
          *
          * @param handler The handler to build and configure the progress bar.
          * @return {@link CocoaDialog.Builder} instance.
