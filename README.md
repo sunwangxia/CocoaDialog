@@ -174,7 +174,7 @@ setCustomWidth(int)和setCustomHeight(int)参数为像素值，同时也支持Wi
     final CocoaDialog dialog = new CocoaDialog.Builder(this)
                         .setTitle("下载文件")
                         .setMessage("正在拼命加载中...")
-                        .addProgressBar(new ProgressBarBuildHandler<ProgressBar>() {
+                        .addProgressBar(new ProgressBarBuildHandler/*<ProgressBar>*/() { // 1.3.2之后移除了此处无意义泛型，旧版还需使用泛型
                             @Override
                             public ProgressBar build(Context context) {
                                 return new ProgressBar(context, null, android.R.attr.progressBarStyleHorizontal);
