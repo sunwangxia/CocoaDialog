@@ -8,7 +8,15 @@
 
 ## 获取CocoaDialog
 
-请在project/build.gradle文件中添加如下内容:
+请在app/build.gradle文件中添加如下内容:
+
+```
+dependencies {
+   compile 'com.berwin.cocoadialog:cocoadialog:1.3.2'
+}
+```
+
+或者使用JitPack，在project/build.gradle文件中添加如下内容:
 
 ```
 allprojects {
@@ -18,11 +26,12 @@ allprojects {
     }
 }
 ```
+
 然后在app/build.gradle文件中添加如下内容:
 
 ```
 dependencies {
-   compile 'com.github.SunBerwin:CocoaDialog:v1.3.1'
+   compile 'com.github.SunBerwin:CocoaDialog:v1.3.2'
 }
 ```
 

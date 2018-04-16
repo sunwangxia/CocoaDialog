@@ -1,11 +1,9 @@
 <resources>
 
     <style name="Animation.CocoaDialog.ActionSheet" parent="android:Animation">
-        <item name="@android:windowEnterAnimation">@anim/cocoa_dialog_action_sheet_enter</item>
+        <item name="android:windowEnterAnimation">@anim/cocoa_dialog_action_sheet_enter</item>
         //进入时的动画
-        <item name="@android:windowExitAnimation">@anim/cocoa_dialog_action_sheet_exit</item>
+        <item name="android:windowExitAnimation">@anim/cocoa_dialog_action_sheet_exit</item>
         //退出时的动画
     </style>
-
 </resources>
-

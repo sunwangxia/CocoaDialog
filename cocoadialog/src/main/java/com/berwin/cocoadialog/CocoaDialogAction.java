@@ -1,39 +1,36 @@
 package com.berwin.cocoadialog;
 
 
-public class CocoaDialogAction {
+import android.support.annotation.NonNull;
 
-    private String title;
-    private CocoaDialogActionStyle style;
-    private OnClickListener listener;
+public final class CocoaDialogAction {
 
-    public CocoaDialogAction(String title, CocoaDialogActionStyle style, OnClickListener listener) {
+    private final String title;
+    private final CocoaDialogActionStyle style;
+    private final OnClickListener listener;
+
+    /**
+     * An action for a {@link CocoaDialog}, appears as a button.
+     *
+     * @param title The title of the action.
+     * @param style The {@link CocoaDialogActionStyle} of the action, {@link CocoaDialogActionStyle#cancel} always lay at the left or bottom of the actions, {@link CocoaDialogActionStyle#destructive}'s text would be red.
+     * @param listener The click listener, when user click the button {@link CocoaDialogAction.OnClickListener#onClick(CocoaDialog)} would be called.
+     */
+    public CocoaDialogAction(String title, @NonNull CocoaDialogActionStyle style, OnClickListener listener) {
         this.title = title;
         this.style = style;
         this.listener = listener;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public void setStyle(CocoaDialogActionStyle style) {
-        this.style = style;
-    }
-
-    public void setOnClickListener(OnClickListener listener) {
-        this.listener = listener;
-    }
-
-    public String getTitle() {
+    String getTitle() {
         return title;
     }
 
-    public CocoaDialogActionStyle getStyle() {
+    CocoaDialogActionStyle getStyle() {
         return style;
     }
 
-    public OnClickListener getOnClickListener() {
+    OnClickListener getOnClickListener() {
         return listener;
     }
 

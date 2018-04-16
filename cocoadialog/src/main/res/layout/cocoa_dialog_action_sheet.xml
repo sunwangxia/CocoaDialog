@@ -50,10 +50,11 @@
             android:background="@drawable/cocoa_dialog_bottom_radius"
             android:orientation="vertical">
 
-            <TextView
+            <View
                 android:id="@+id/panelBorder"
                 android:layout_width="match_parent"
-                android:layout_height="1dp" />
+                android:layout_height="1dp"
+                android:background="#c8c7cc"/>
 
         </LinearLayout>
 

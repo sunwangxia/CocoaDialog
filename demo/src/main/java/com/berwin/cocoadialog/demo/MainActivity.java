@@ -133,7 +133,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 final CocoaDialog dialog = new CocoaDialog.Builder(this)
                         .setTitle("下载文件")
                         .setMessage("正在拼命加载中...")
-                        .addProgressBar(new ProgressBarBuildHandler<ProgressBar>() {
+                        .addProgressBar(new ProgressBarBuildHandler() {
                             @Override
                             public ProgressBar build(Context context) {
                                 return new ProgressBar(context, null, android.R.attr.progressBarStyleHorizontal);
