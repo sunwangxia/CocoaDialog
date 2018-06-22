@@ -12,7 +12,7 @@
 
 ```
 dependencies {
-   compile 'com.berwin.cocoadialog:cocoadialog:1.3.2'
+   compile 'com.berwin.cocoadialog:cocoadialog:1.3.3'
 }
 ```
 
@@ -31,7 +31,7 @@ allprojects {
 
 ```
 dependencies {
-   compile 'com.github.SunBerwin:CocoaDialog:v1.3.2'
+   compile 'com.github.SunBerwin:CocoaDialog:v1.3.3'
 }
 ```
 

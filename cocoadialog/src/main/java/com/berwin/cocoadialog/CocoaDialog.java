@@ -47,6 +47,7 @@ public final class CocoaDialog extends Dialog {
 
     private int mCustomWidth;
     private int mCustomHeight;
+    private int mCustomGravity;
     private final View mCustomContentView;
 
     private CocoaDialog(Builder builder) {
@@ -60,6 +61,7 @@ public final class CocoaDialog extends Dialog {
         this.mPreferredStyle = builder.preferredStyle;
         this.mCustomHeight = builder.customHeight;
         this.mCustomWidth = builder.customWidth;
+        this.mCustomGravity = builder.customGravity;
         this.mCustomContentView = builder.customContentView;
         if (builder.cancelable != null) {
             setCancelable(builder.cancelable);
@@ -100,16 +102,16 @@ public final class CocoaDialog extends Dialog {
                     mHeaderPanel.addView(mProgressBar);
                 }
                 if (mEditTextList != null) {
-                    int padding = DensityUtil.dip2px(getContext(), 4);
+//                    int padding = DensityUtil.dip2px(getContext(), 4);
                     LinearLayout.LayoutParams firstParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
                     firstParams.topMargin = DensityUtil.dip2px(getContext(), 12);
                     LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
                     params.topMargin = DensityUtil.dip2px(getContext(), 8);
                     for (int i = 0; i < mEditTextList.size(); i++) {
                         EditText editText = mEditTextList.get(i);
-                        editText.setBackgroundResource(com.berwin.cocoadialog.R.drawable.cocoa_dialog_edit_text_background);
+//                        editText.setBackgroundResource(com.berwin.cocoadialog.R.drawable.cocoa_dialog_edit_text_background);
                         editText.setLayoutParams(i == 0 ? firstParams : params);
-                        editText.setPadding(padding, padding, padding, padding);
+//                        editText.setPadding(padding, padding, padding, padding);
                         editText.setLines(1);
                         editText.setMaxLines(1);
                         mHeaderPanel.addView(editText);
@@ -131,6 +133,7 @@ public final class CocoaDialog extends Dialog {
                 if (mCustomContentView == null) {
                     throw new IllegalArgumentException("Custom content view can not be null, call CocoaDailog.Builder.setCustomContentView(View) first.");
                 }
+                mWindow.setGravity(mCustomGravity);
                 mWindow.setWindowAnimations(mAnimStyleResId == 0 ? android.R.style.Animation_Dialog : mAnimStyleResId);
                 if (mCustomWidth < WindowManager.LayoutParams.WRAP_CONTENT) {
                     mCustomWidth = WindowManager.LayoutParams.WRAP_CONTENT;
@@ -336,6 +339,7 @@ public final class CocoaDialog extends Dialog {
 
         int customWidth = WindowManager.LayoutParams.WRAP_CONTENT;
         int customHeight = WindowManager.LayoutParams.WRAP_CONTENT;
+        int customGravity = Gravity.CENTER;
         View customContentView;
 
         int animStyleRes = 0;
@@ -429,6 +433,16 @@ public final class CocoaDialog extends Dialog {
          */
         public Builder setCustomHeight(int customHeight) {
             this.customHeight = customHeight;
+            return this;
+        }
+
+        /**
+         * Set the custom gravity for this {@link CocoaDialog}, only effective on the style of {@link CocoaDialogStyle#custom}.
+         * @param gravity see {@link Gravity}
+         * @return {@link Builder} instance.
+         */
+        public Builder setCustomGravity(int gravity) {
+            this.customGravity = gravity;
             return this;
         }
 
