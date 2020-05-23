@@ -2,4 +2,6 @@
     <string name="app_name">CocoaDialog Demo</string>
     <string name="dialog_title">CocoaDialog Title</string>
     <string name="dialog_message">This is a message.</string>
+    <string name="cancel">Cancel</string>
+    <string name="ok">OK</string>
 </resources>

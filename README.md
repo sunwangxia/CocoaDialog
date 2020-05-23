@@ -12,7 +12,7 @@
 
 ```
 dependencies {
-   compile 'com.berwin.cocoadialog:cocoadialog:1.3.3'
+   compile 'com.berwin.cocoadialog:cocoadialog:1.3.4'
 }
 ```
 
@@ -44,7 +44,7 @@ dependencies {
     builder.setTitle("Title for CocoaDialog");
     builder.setMessage("This is a message.");
     builder.addAction(new CocoaDialogAction("Cancel", CocoaDialogActionStyle.cancel, null));
-    builder.addAction(new CocoaDialogAction("OK", CocoaDialogActionStyle.normal, new CocoaDialogAction.OnClickListener<CocoaDialog>() {
+    builder.addAction(new CocoaDialogAction("OK", CocoaDialogActionStyle.normal, new CocoaDialogAction.OnClickListener() {
         @Override
         public void onClick(CocoaDialog dialog) {
             Toast.makeText(getBaseContext(), "The ok button is clicked.", Toast.LENGTH_SHORT).show();
@@ -97,7 +97,7 @@ dependencies {
 setCustomWidth(int)和setCustomHeight(int)参数为像素值，同时也支持WindowManager.LayoutParams.MATCH\_PARENT 和 WindowManager.LayoutParams.WRAP\_CONTENT，设置为0或其他非法数值默认使用WindowManager.LayoutParams.WRAP\_CONTENT。
 
 
-> 注意：使用自定义ContentView时会使用其他方法(如setTitle、setMessage、addAction等)失效，如果ContentView中有需要与用户交互的控件需要在外面进行监听处理。
+> 注意：自定义ContentView时仅提供对话框容器，其他方法(如setTitle、setMessage、addAction等)失效，如果ContentView中有需要与用户交互的控件需要开发者自行监听处理。
 
 示例代码如下：
 
@@ -122,6 +122,8 @@ setCustomWidth(int)和setCustomHeight(int)参数为像素值，同时也支持Wi
 * title: 按钮显示的文本，类型为String
 * style: 按钮的样式，类型为枚举类型CocoaDialogActionStyle
 * listener: 按钮点击事件监听器，按钮点击会回调监听器的onClick方法
+
+**1.3.4版本** 新增按钮字体颜色自定义功能，新增构建方法参数color，可通过该参数对按钮字体颜色进行自定义
 
 > 注：虽然回调方法中传入了CocoaDialog实例，但由于内部已经默认将对话框关闭掉了，调用者无需手动调用dismiss方法来取消对话框。
 

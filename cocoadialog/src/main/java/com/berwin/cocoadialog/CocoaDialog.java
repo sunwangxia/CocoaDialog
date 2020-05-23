@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
@@ -309,11 +310,12 @@ public final class CocoaDialog extends Dialog {
     private Button buildActionButton(CocoaDialogAction cocoaDialogAction, ViewGroup.LayoutParams layoutParams) {
         final CocoaDialogAction action = cocoaDialogAction;
         Button button = new Button(getContext(), null, android.R.attr.borderlessButtonStyle);
+        button.setFocusable(false);
         button.setAllCaps(false);
         button.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
         button.setLayoutParams(layoutParams);
         button.setText(action.getTitle());
-        button.setTextColor(action.getStyle() == CocoaDialogActionStyle.destructive ? Color.RED : 0xFF007AFF);
+        button.setTextColor(action.getColor());
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -330,7 +332,7 @@ public final class CocoaDialog extends Dialog {
     public static class Builder {
 
         final Context context;
-        final CocoaDialogStyle preferredStyle;
+        CocoaDialogStyle preferredStyle;
 
         Boolean cancelable;
         Boolean canceledOnTouchOutside;
@@ -438,6 +440,7 @@ public final class CocoaDialog extends Dialog {
 
         /**
          * Set the custom gravity for this {@link CocoaDialog}, only effective on the style of {@link CocoaDialogStyle#custom}.
+         *
          * @param gravity see {@link Gravity}
          * @return {@link Builder} instance.
          */
@@ -454,6 +457,7 @@ public final class CocoaDialog extends Dialog {
          */
         public Builder setCustomContentView(View contentView) {
             this.customContentView = contentView;
+            this.preferredStyle = CocoaDialogStyle.custom;
             return this;
         }
 
@@ -550,6 +554,43 @@ public final class CocoaDialog extends Dialog {
          */
         public Builder addAction(String title, @NonNull CocoaDialogActionStyle style, CocoaDialogAction.OnClickListener listener) {
             return addAction(new CocoaDialogAction(title, style, listener));
+        }
+
+        /**
+         * Add an action for the {@link CocoaDialog}, appears as a button, will be ignored on the style of {@link CocoaDialogStyle#custom}.
+         *
+         * @param title    The title of the action.
+         * @param style    The {@link CocoaDialogActionStyle} of the action, {@link CocoaDialogActionStyle#cancel} always lay at the left or bottom of the actions, {@link CocoaDialogActionStyle#destructive}'s text will be red.
+         * @param listener The click listener, when user click the button {@link CocoaDialogAction.OnClickListener#onClick(CocoaDialog)} will be called.
+         * @return {@link CocoaDialog.Builder} instance.
+         */
+        public Builder addAction(String title, @NonNull CocoaDialogActionStyle style, @ColorInt int color, CocoaDialogAction.OnClickListener listener) {
+            return addAction(new CocoaDialogAction(title, style, color, listener));
+        }
+
+        /**
+         * Add an action for the {@link CocoaDialog}, appears as a button, will be ignored on the style of {@link CocoaDialogStyle#custom}.
+         *
+         * @param titleRes The string resource id of action's title.
+         * @param style    The {@link CocoaDialogActionStyle} of the action, {@link CocoaDialogActionStyle#cancel} always lay at the left or bottom of the actions, {@link CocoaDialogActionStyle#destructive}'s text will be red.
+         * @param listener The click listener, when user click the button {@link CocoaDialogAction.OnClickListener#onClick(CocoaDialog)} will be called.
+         * @return {@link CocoaDialog.Builder} instance.
+         */
+        public Builder addAction(@StringRes int titleRes, @NonNull CocoaDialogActionStyle style, CocoaDialogAction.OnClickListener listener) {
+            return addAction(new CocoaDialogAction(context.getString(titleRes), style, listener));
+        }
+
+        /**
+         * Add an {@link CocoaDialogActionStyle#normal} action for the {@link CocoaDialog}, appears as a button, will be ignored on the style of {@link CocoaDialogStyle#custom}.
+         *
+         * @param titleRes The string resource id of action's title.
+         * @param color    The {@link Color} of action's title.
+         * @param style    The {@link CocoaDialogActionStyle} of the action, {@link CocoaDialogActionStyle#cancel} always lay at the left or bottom of the actions.
+         * @param listener The click listener, when user click the button {@link CocoaDialogAction.OnClickListener#onClick(CocoaDialog)} will be called.
+         * @return {@link CocoaDialog.Builder} instance.
+         */
+        public Builder addAction(@StringRes int titleRes, @NonNull CocoaDialogActionStyle style, @ColorInt int color, CocoaDialogAction.OnClickListener listener) {
+            return addAction(new CocoaDialogAction(context.getString(titleRes), style, color, listener));
         }
 
         /**

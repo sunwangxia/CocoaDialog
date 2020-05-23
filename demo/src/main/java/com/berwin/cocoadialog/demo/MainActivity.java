@@ -2,12 +2,12 @@ package com.berwin.cocoadialog.demo;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.text.InputType;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
@@ -66,13 +66,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 new CocoaDialog.Builder(this, CocoaDialogStyle.alert)
                         .setTitle(R.string.dialog_title)
                         .setMessage(R.string.dialog_message)
-                        .addAction(new CocoaDialogAction("Cancel", CocoaDialogActionStyle.cancel, null))
-                        .addAction(new CocoaDialogAction("OK", CocoaDialogActionStyle.normal, new CocoaDialogAction.OnClickListener() {
+                        // 自定义按钮字体颜色
+                        .addAction(R.string.cancel, CocoaDialogActionStyle.cancel, Color.RED, null)
+                        // 使用默认字体颜色，normal及cancel风格字体颜色默认为蓝色
+                        .addAction(R.string.ok, CocoaDialogActionStyle.normal, new CocoaDialogAction.OnClickListener() {
                             @Override
                             public void onClick(CocoaDialog dialog) {
                                 Toast.makeText(getBaseContext(), "OK clicked.", Toast.LENGTH_SHORT).show();
                             }
-                        }))
+                        })
                         .build().show();
                 break;
             case R.id.btn_alert_other:
@@ -80,13 +82,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 new CocoaDialog.Builder(this, CocoaDialogStyle.alert)
                         .setTitle(R.string.dialog_title)
                         .setMessage(R.string.dialog_message)
-                        .addAction(new CocoaDialogAction("Cancel", CocoaDialogActionStyle.cancel, null))
+                        .addAction(R.string.cancel, CocoaDialogActionStyle.cancel, null)
+                        // destructive风格字体颜色默认为红色
                         .addAction(new CocoaDialogAction("Destructive Choice", CocoaDialogActionStyle.destructive, new CocoaDialogAction.OnClickListener() {
                             @Override
                             public void onClick(CocoaDialog dialog) {
                                 Toast.makeText(getBaseContext(), "Destructive choice clicked.", Toast.LENGTH_SHORT).show();
                             }
                         }))
+                        // normal及cancel风格字体颜色默认为蓝色
                         .addAction(new CocoaDialogAction("Safe Choice", CocoaDialogActionStyle.normal, new CocoaDialogAction.OnClickListener() {
                             @Override
                             public void onClick(CocoaDialog dialog) {
@@ -100,8 +104,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 new CocoaDialog.Builder(this, CocoaDialogStyle.alert)
                         .setTitle(R.string.dialog_title)
                         .setMessage(R.string.dialog_message)
-                        .addAction(new CocoaDialogAction("Cancel", CocoaDialogActionStyle.cancel, null))
-                        .addAction(new CocoaDialogAction("OK", CocoaDialogActionStyle.normal, new CocoaDialogAction.OnClickListener() {
+                        // 使用黑色字体
+                        .addAction(R.string.cancel, CocoaDialogActionStyle.cancel, Color.BLACK, null)
+                        // 使用黑色字体
+                        .addAction(R.string.ok, CocoaDialogActionStyle.normal, Color.BLACK, new CocoaDialogAction.OnClickListener() {
                             @Override
                             public void onClick(CocoaDialog dialog) {
                                 List<EditText> editTextList = dialog.getEditTextList();
@@ -109,7 +115,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                     Toast.makeText(getBaseContext(), editTextList.get(0).getText(), Toast.LENGTH_SHORT).show();
                                 }
                             }
-                        }))
+                        })
                         .addEditText(new EditTextConfigurationHandler() {
                             @Override
                             public void onEditTextAdded(EditText editText) {
@@ -199,15 +205,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         .build().show();
                 break;
             case R.id.btn_custom:
-                // CocoaDialogStyle.custom样式为自定义对话框，当Style设置为custom时只有setCustomWidth、setCustomHeight
-                // 和setContentView方法会生效，其他方法均会被忽略。
-                // 自定义的ContentView中有任何需要交互的控件均需要调用者在外部进行监听处理。
-                // customWidth、customHeight 可设置像素值用WindowManager.LayoutParams.MATCH_PARENT和
+                // 通过setContentView可自定义对话框内容，自定义的ContentView中有任何需要交互的控件均需要调用者在外部进行监听处理。
+                // customWidth、customHeight 可设置像素值或WindowManager.LayoutParams.MATCH_PARENT和
                 // WindowManager.LayoutParams.WRAP_CONTENT，若设置为0或除-1和-2之外的其他负数则默认使用WindowManager.LayoutParams.WRAP_CONTENT
-                new CocoaDialog.Builder(this, CocoaDialogStyle.custom)
-                        .setCustomWidth(WindowManager.LayoutParams.WRAP_CONTENT)
-                        .setCustomHeight(WindowManager.LayoutParams.WRAP_CONTENT)
+                new CocoaDialog.Builder(this)
                         .setCustomContentView(LayoutInflater.from(this).inflate(R.layout.loading_dialog, null))
+                        .setCustomHeight(WindowManager.LayoutParams.WRAP_CONTENT)
+                        .setCustomWidth(WindowManager.LayoutParams.WRAP_CONTENT)
                         .build().show();
                 break;
         }
